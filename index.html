@@ -106,6 +106,16 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 .cost span{color:#c9cff8;font-size:14px}
 .warn{margin-top:12px;font-size:14px;padding:10px 14px;border-left:4px solid var(--md);background:var(--panel);border-radius:0 8px 8px 0}
 .foot{font-size:14px;color:var(--mut)}
+.pr{display:grid;grid-template-columns:5.5em minmax(0,1fr) auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
+.pr i{display:block;height:12px;border-radius:6px;background:var(--fig)}
+.pr.t i{background:var(--acc)}
+.pr b{white-space:nowrap}
+.set{list-style:none;padding:0!important}
+.set li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:5px 0!important;margin:0!important}
+.set li b{white-space:nowrap}
+.burn{margin-top:10px;font-size:15px}
+.burn b{font-size:22px;font-weight:800;color:var(--acc)}
+.pbtn small{display:block;font-size:11px;font-weight:600;opacity:.8}
 @media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"res" "form"}.two{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.res{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.figbox{height:300px}.big{font-size:56px}.stats b{font-size:20px}.risk{grid-template-columns:minmax(0,1fr) 70px 74px}}
 @media(prefers-reduced-motion:no-preference){.figbox svg path,.figbox svg circle{transition:d .5s ease,r .5s ease}}
@@ -137,6 +147,7 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 <label for="act">Daily activity<select id="act"><option value="1.2">Desk job, little walking</option><option value="1.375">Light: on feet some of the day</option><option value="1.55">Moderate: active job or sport</option><option value="1.725">Very active: physical work</option></select></label>
 <label for="goal">Goal<select id="goal"><option value="auto">Let the system decide</option><option value="lose">Lose fat</option><option value="keep">Maintain / tone up</option><option value="gain">Build muscle</option></select></label>
 </div>
+<div id="paceBox"><label>Weight-loss pace (per week)</label><div class="seg" id="paceSeg" role="group" aria-label="Weight-loss pace"><button type="button" data-v="0.25">0.25 kg</button><button type="button" data-v="0.5">0.5 kg</button><button type="button" data-v="0.75">0.75 kg</button><button type="button" data-v="1">1 kg</button></div><p class="note" id="paceNote" style="margin-top:6px"></p></div>
 <div><label>Where can you train?</label><div class="seg" id="placeSeg" role="group" aria-label="Training place"><button type="button" data-v="gym">Gym</button><button type="button" data-v="home">Home / walking only</button></div></div>
 <label for="exp">Training experience<select id="exp"><option value="0">Beginner (under 6 months)</option><option value="1">Some (6 months to 2 years)</option><option value="2">Experienced (2+ years)</option></select></label>
 <details id="tape"><summary>Add tape measurements for a more accurate body fat %</summary>
@@ -156,7 +167,7 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 <section class="band sec"><div class="wrap">
 <h2 id="condTitle">Your body's current condition</h2>
 <div class="two">
-<div><p class="summary" id="summary"></p><div class="kv" id="kv"></div></div>
+<div><p class="summary" id="summary"></p><div class="kv" id="kv"></div><h3 style="font-size:22px;margin-top:24px">Projection</h3><p class="note" id="projNote" style="margin:4px 0 8px"></p><div id="proj"></div></div>
 <div><h3 style="font-size:22px">If nothing changes: health risks to watch</h3><p class="note" style="margin:4px 0 8px">Risk levels from body fat, BMI (Asian cut-offs), waist and age. These are odds, not a diagnosis; a blood test (sugar, HbA1c, lipids, liver) tells you where you really stand.</p><div id="risks"></div></div>
 </div>
 </div></section>
@@ -173,7 +184,7 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 <div class="figs" id="woFigs"></div>
 <div class="two">
 <div><h3 style="font-size:22px;margin-bottom:6px">Your week</h3><ul class="week" id="week"></ul></div>
-<div><h3 style="font-size:22px">If you can't go to the gym: cardio on foot</h3><div class="cardio" id="cardio"></div></div>
+<div><h3 style="font-size:22px" id="cardioH">Cardio</h3><div class="cardio" id="cardio"></div></div>
 </div>
 <div class="sess" id="sess"></div>
 </div></section>
@@ -208,22 +219,24 @@ const fields=['age','ht','wt','act','goal','exp','waist','neck','hip'];
 /* ---------- body silhouette ---------- */
 function smooth(p){const L=p.length;let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;for(let i=0;i<L;i++){const a=p[(i-1+L)%L],b=p[i],c=p[(i+1)%L],e=p[(i+2)%L];const c1=[b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6],c2=[c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6];d+=`C${c1.map(v=>v.toFixed(1))} ${c2.map(v=>v.toFixed(1))} ${c[0].toFixed(1)},${c[1].toFixed(1)}`}return d+'Z'}
 function figure(sex,bf,id,c1,c2){
-const m=sex==='m',f=clamp((bf-(m?6:14))/34,0,1.15);
-const n=(m?6:5)+2*f,Sh=(m?29:24)+3*f,C=(m?25:22)+8*f,W=(m?18:15)+17*f,H=(m?21:25)+13*f;
-const R=[[n,33],[n+1,44],[Sh,52],[C,72],[W,102],[H,128],[H*.82,148],[0,154]];
+const m=sex==='m',f=clamp((bf-(m?10:22))/30,0,1.2);
+const n=(m?6:5)+2*f,Sh=(m?29:24)+3*f,C=(m?25:22)+8*f,W=(m?18:14.5)+(m?17:15)*f,H=(m?21:23.5)+13*f;
+const R=[[n,33],[n+1,44],[Sh,52],[C,72],[W,102],[H,m?128:132],[H*.92,150],[0,155]];
 const pts=R.concat(R.slice(0,-1).reverse().map(([x,y])=>[-x,y])).map(([x,y])=>[60+x,y]);
-const hx=H*.5,tw=(m?14:15)+13*f,cw=9+5*f,uw=9+7*f,fw=7+4*f;
+const hx=H*.52,tw=(m?16:17)+13*f,cw=11+6*f,uw=9+7*f,fw=7+4*f;
 const ex=Math.max(Sh+2,W+uw/2+2),wx=Math.max(Sh+4,H+fw/2+2);
 let g='';
 for(const s of [-1,1]){
 g+=`<path d="M${60+s*hx},138 L${60+s*(hx*.85+1)},198" stroke-width="${tw}"/><path d="M${60+s*(hx*.85+1)},198 L${60+s*(hx*.7+1)},244" stroke-width="${cw}"/><ellipse cx="${60+s*(hx*.7+3)}" cy="250" rx="${cw*.75}" ry="4" stroke="none"/>`;
 g+=`<path d="M${60+s*(Sh-4)},56 L${60+s*ex},100" stroke-width="${uw}"/><path d="M${60+s*ex},100 L${60+s*wx},140" stroke-width="${fw}"/><circle cx="${60+s*wx}" cy="147" r="${fw*.62}" stroke="none"/>`}
-const abs=bf<(m?15:21)?`<g stroke="${c2}" stroke-width="1" opacity=".55" fill="none"><path d="M60,74 V100"/><path d="M53,82 H67 M54,90 H66 M55,98 H65"/></g>`:'';
+const abs=bf<(m?14:20)?`<g stroke="${c2}" stroke-width="1" opacity=".55" fill="none"><path d="M60,74 V100"/><path d="M53,82 H67 M54,90 H66 M55,98 H65"/></g>`:'';
 return `<svg viewBox="0 0 120 262" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Body shape at ${Math.round(bf)}% body fat"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="10" y1="0" x2="110" y2="0"><stop offset="0" stop-color="${c2}"/><stop offset=".55" stop-color="${c1}"/></linearGradient></defs><ellipse cx="60" cy="254" rx="${36+8*f}" ry="4" fill="${c1}" opacity=".18"/><g fill="url(#${id})" stroke="url(#${id})" stroke-linecap="round">${g}<path d="${smooth(pts)}" stroke="none"/><circle cx="60" cy="20" r="${12+1.5*f}" stroke="none"/></g>${abs}<circle cx="60" cy="108" r="1.1" fill="${c2}" opacity=".6"/></svg>`}
 
 /* ---------- body maths ---------- */
-const CAT={m:[[6,'Very lean'],[14,'Athletic'],[18,'Fit'],[25,'Average'],[99,'Obese range']],f:[[14,'Very lean'],[21,'Athletic'],[25,'Fit'],[32,'Average'],[99,'Obese range']]};
-const cat=(sex,bf)=>CAT[sex].find(c=>bf<c[0])[1];
+/* age-adjusted ranges (Gallagher et al. 2000): [underfat below, healthy up to, overweight up to] */
+const RNG={m:[[39,8,20,25],[59,11,22,28],[99,13,25,30]],f:[[39,21,33,39],[59,23,34,40],[99,24,36,42]]};
+const rng=(sex,age)=>RNG[sex].find(r=>age<=r[0]).slice(1);
+function cat(sex,bf,age){const[lo,hi,ov]=rng(sex,age);return bf<lo?'Underfat':bf<lo+(hi-lo)*.4?'Lean and healthy':bf<hi-3?'Healthy':bf<hi?'High end of healthy':bf<ov?'Overweight':'Obese range'}
 function bmiClass(b){return b<18.5?'Underweight':b<23?'Normal':b<25?'Overweight':b<30?'Obese (class I)':'Obese (class II)'}
 function calc(){
 const v=k=>parseFloat($(k).value);
@@ -236,17 +249,26 @@ else bf=1.2*bmi+0.23*age-10.8*(m?1:0)-5.4;
 bf=clamp(bf,m?4:10,60);
 const fat=w*bf/100,lbm=w-fat,whtr=waist?waist/h:null;
 const bmr=10*w+6.25*h-5*age+(m?5:-161),act=parseFloat($('act').value),tdee=bmr*act;
-const fitHi=m?18:25,avgHi=m?25:32,lowBF=m?8:17;
+const[lowBF,hiBF,ovBF]=rng(sex,age),fitHi=hiBF-3,avgHi=ovBF;
 let goal=$('goal').value;const auto=goal==='auto';
-if(auto)goal=bf>fitHi?'lose':(bf<(m?10:18)||bmi<18.5)?'gain':'keep';
+if(auto)goal=(bf>fitHi||bmi>=25)?'lose':(bf<lowBF+2||bmi<18.5)?'gain':'keep';
 const floor=m?1500:1200;
-let kcal=goal==='lose'?Math.max(floor,tdee-Math.min(750,tdee*.2)):goal==='gain'?tdee+250:tdee;
-kcal=Math.round(kcal/10)*10;
-const protein=Math.round(Math.min(lbm*(goal==='keep'?1.6:1.9),w*2));
-const fatG=Math.round(kcal*.25/9),carb=Math.max(0,Math.round((kcal-protein*4-fatG*9)/4));
-const target=m?(goal==='gain'?14:16):(goal==='gain'?22:24);
-return{sex,m,age,h,w,bmi,bf,fat,lbm,whtr,waist,bmr,tdee,goal,auto,kcal,protein,fatG,carb,method,fitHi,avgHi,lowBF,target,
+const PACES=[.25,.5,.75,1],limit=w*.01;
+let sug=bf>=ovBF?(bmi>=32?1:.75):bf>hiBF?.5:.25;
+while(sug>.25&&sug>limit+.001)sug-=.25;
+const pace=goal==='lose'?(S.pace?+S.pace:sug):goal==='gain'?.25:0;
+const target=Math.round(lowBF+(hiBF-lowBF)*(goal==='gain'?.45:.55));
+return{sex,m,age,h,w,bmi,bf,fat,lbm,whtr,waist,bmr,tdee,goal,auto,floor,pace,sug,limit,method,fitHi,avgHi,lowBF,hiBF,target,
 exp:+$('exp').value,place:S.place}}
+/* calories come last: diet deficit = needed deficit minus what cardio burns */
+function energy(c,wo){
+const need=c.pace*7700/7,ex=wo.netWeek/7;let kcal,extraWalk=0;
+if(c.goal==='lose'){kcal=c.tdee-Math.max(0,need-ex);if(kcal<c.floor){extraWalk=r5((c.floor-kcal)/wo.walkNet)+5;kcal=c.floor}}
+else kcal=c.tdee+ex*.8+(c.goal==='gain'?250:0);
+kcal=Math.round(kcal/10)*10;
+const protein=Math.round(Math.min(c.lbm*(c.goal==='keep'?1.6:1.9),c.w*2));
+const fatG=Math.round(kcal*.25/9),carb=Math.max(0,Math.round((kcal-protein*4-fatG*9)/4));
+Object.assign(c,{kcal,protein,fatG,carb,extraWalk,ex,dietDef:Math.max(0,c.tdee-kcal)})}
 
 /* ---------- risks ---------- */
 const OVER=[['Type 2 diabetes / insulin resistance',1,'Belly fat makes the body resist insulin; South Asians tend to get it at lower weights.'],
@@ -291,16 +313,38 @@ const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 function workout(c){
 const days=clamp([3,4,5][c.exp]-(c.age>=55?1:0)+(c.goal==='gain'&&c.exp>0?1:0),2,6);
 const rec=days;
-const obese=c.bf>=c.avgHi;
-const cardioMin=c.goal==='lose'?(obese?250:210):c.goal==='keep'?150:90;
-const steps=c.goal==='lose'?10000:c.goal==='keep'?8000:7000;
-const lowImpact=c.bmi>=30||c.age>=55;
-const fin=c.goal==='lose'?15:c.goal==='keep'?10:0;
+const lowImpact=c.bmi>=30||c.age>=55,e=c.exp,W=c.w;
+const target=c.goal==='lose'?{.25:150,.5:200,.75:250,1:300}[c.pace]:c.goal==='keep'?150:90;
+const steps=c.goal==='lose'?Math.round(8000+c.pace*4000):c.goal==='keep'?8000:7000;
+const fin=c.goal==='lose'?(c.pace>=.75?20:15):c.goal==='keep'?10:0;
 const cDays=Math.max(1,6-days);
-const per=Math.max(20,r5((cardioMin-days*fin)/cDays));
-const sMin=[45,55,65][c.exp]+fin;
+const per=clamp(r5((target-days*fin)/cDays),20,60);
+const cardioMin=days*fin+cDays*per;
+const sMin=[45,55,65][e]+fin;
 const weekMin=days*sMin+cDays*per;
-return{rec,days,cardioMin,steps,lowImpact,fin,per,cDays,sMin,weekMin}}
+/* ACSM metabolic equations: VO2 in ml/kg/min; 5 kcal per litre O2 */
+const vw=(k,g)=>{const v=k*1000/60;return .1*v+1.8*v*g/100+3.5},vr=(k,g)=>{const v=k*1000/60;return .2*v+.9*v*g/100+3.5};
+const gross=vo=>vo*W/1000*5,net=vo=>(vo-3.5)*W/1000*5,warm=vw(4,0);
+const P=[];
+if(c.place==='gym'){
+const sp=lowImpact?[4.5,4.8,5][e]:[5,5.5,5.8][e],inc=lowImpact?[4,6,8][e]:[6,9,12][e];
+P.push({n:'Treadmill incline walk',vo:vw(sp,inc),main:`${sp} km/h · incline ${inc}%`,tip:'Don\'t hold the rails; it cuts the burn by a third.'});
+const lv=[5,7,9][e],met=[5,6,7][e];
+P.push({n:'Cross trainer',vo:met*3.5,main:`Level ${lv} · 55–65 strides/min`,tip:'Push and pull the handles; keep heels down.'});
+if(!lowImpact){const I=[[8,1,5,2],[9,2,5.5,1],[11,1,6,1]][e];
+P.push({n:'Treadmill intervals',vo:(vr(I[0],1)*I[1]+vw(I[2],1)*I[3])/(I[1]+I[3]),main:`Run ${I[1]} min at ${I[0]} km/h, walk ${I[3]} min at ${I[2]} km/h · incline 1%`,tip:'Repeat the run–walk block for the main time.'})}
+else{const wt=[60,80,100][e];P.push({n:'Stationary bike',vo:[4.8,5.8,6.8][e]*3.5,main:`About ${wt} W (resistance ${[4,6,8][e]}) · 70–80 rpm`,tip:'Joint-friendly; seat at hip height.'})}}
+else{const sp=lowImpact?5:[5.5,6,6.3][e];
+P.push({n:'Brisk walk',vo:vw(sp,0),main:`${sp} km/h · flat road`,tip:'Pace where talking is possible but singing isn\'t.'});
+if(!lowImpact){const I=[[8,1,5,2],[9,2,5.5,1],[10,3,6,1]][e];P.push({n:'Run–walk',vo:(vr(I[0],0)*I[1]+vw(I[2],0)*I[3])/(I[1]+I[3]),main:`Run ${I[1]} min at ~${I[0]} km/h, walk ${I[3]} min`,tip:'Slow enough to breathe through your nose on walk breaks.'})}
+else P.push({n:'Hill or stair walk',vo:vw(4.5,8),main:'4–5 km/h on a slope, or stairs at a steady pace',tip:'Use a railing on stairs; go down slowly.'})}
+const sess=(p,M,w=true)=>{const mm=M-(w?8:0);return{g:Math.round((w?8*gross(warm):0)+mm*gross(p.vo)),n:Math.round((w?8*net(warm):0)+mm*net(p.vo)),mm}};
+const rot=[];for(let i=0;i<cDays;i++)rot.push(P[i%P.length]);
+const finP=P[0],finS=sess(finP,fin,false);
+const netWeek=rot.reduce((t,p)=>t+sess(p,per).n,0)+days*(fin?finS.n:0);
+const grossWeek=rot.reduce((t,p)=>t+sess(p,per).g,0)+days*(fin?finS.g:0);
+const lift=Math.round([3.5,4.5,5][e]*3.5*W/200*(sMin-fin));
+return{rec:days,days,cardioMin,steps,lowImpact,fin,per,cDays,sMin,weekMin,P,rot,sess,finP,finS,netWeek,grossWeek,lift,walkNet:net(vw(5.5,0)),walkGross:gross(vw(5.5,0))}}
 
 /* ---------- foods: per 100 g/ml or per piece; price in ₹ ---------- */
 const F={
@@ -367,51 +411,61 @@ const qty=(k,q)=>{const u=F[k][1];return u==='pc'?`${q} ${F[k][8][q===1?0:1]}`:`
 /* ---------- render ---------- */
 function render(){
 const c=calc(),cs=getComputedStyle(document.documentElement);
+const wo=workout(c);energy(c,wo);
+/* pace control */
+$('paceBox').querySelector('.seg').style.display=c.goal==='lose'?'':'none';
+$('paceSeg').querySelectorAll('button').forEach(b=>{const v=+b.dataset.v;b.setAttribute('aria-pressed',v===c.pace);b.className='pbtn';b.innerHTML=`${v} kg${v===c.sug?'<small>suggested</small>':''}`});
+$('paceNote').innerHTML=c.goal!=='lose'?'Pace applies when the goal is fat loss.':(c.pace>c.limit+.001?`<b>Fast:</b> more than 1% of your body weight a week (${c.limit.toFixed(2)} kg). Expect hunger and some muscle loss; ${c.sug} kg is the suggested pace. `:'')+(c.extraWalk?`Food can't safely go below ${fmt(c.floor)} kcal, so this pace also needs <b>${c.extraWalk} min of extra brisk walking a day</b>.${c.extraWalk>45?' That is hard to keep up; a slower pace will likely get you there sooner overall.':''}`:`Eat ${fmt(c.kcal)} kcal a day; cardio covers the rest of the deficit.`);
 const fig=cs.getPropertyValue('--fig').trim()||'#2433a8';
 $('ftTxt').textContent=`(${Math.floor(c.h/30.48)}′${Math.round(c.h/2.54%12)}″)`;
 $('hipL').style.display=c.m?'none':'';
 $('heroFig').innerHTML=figure(c.sex,c.bf,'gh','#ff6b2c','#ffd2bd');
 $('bfBig').innerHTML=`${c.bf.toFixed(1)}<small>% body fat</small>`;
-$('bfCat').textContent=cat(c.sex,c.bf);
+$('bfCat').textContent=cat(c.sex,c.bf,c.age);
 $('bfMethod').textContent=c.method;
 const gl={lose:'to lose fat',keep:'to maintain',gain:'to build muscle'}[c.goal];
 $('stats').innerHTML=[[c.bmi.toFixed(1),'BMI · '+bmiClass(c.bmi)],[c.fat.toFixed(1)+' kg','Fat mass'],[c.lbm.toFixed(1)+' kg','Lean mass (muscle, bone, water)'],[fmt(c.kcal)+' kcal','Eat per day '+gl]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
 
 /* condition */
-const tW=c.lbm/(1-c.target/100),diff=c.w-tW,weeks=Math.abs(diff)/(diff>0?.5:.25);
-const who=c.m?'men':'women',catTxt=cat(c.sex,c.bf);
+const tW=c.lbm/(1-c.target/100),diff=c.w-tW,weeks=Math.abs(diff)/(c.goal==='lose'?c.pace:.25);
+const who=`${c.m?'men':'women'} your age (healthy: ${c.lowBF}–${c.hiBF}%)`,catTxt=cat(c.sex,c.bf,c.age);
 let s=`At <strong>${c.bf.toFixed(1)}% body fat</strong> you are in the <strong>${catTxt.toLowerCase()}</strong> group for ${who}. `;
-s+=c.goal==='lose'?`A healthy target is about ${c.target}%, which means losing roughly <strong>${diff.toFixed(1)} kg of fat</strong> (to about ${tW.toFixed(0)} kg) while keeping your muscle. At a steady pace that takes around ${Math.ceil(weeks)} weeks.`:c.goal==='gain'?`You have little fat to spare. The priority is gaining muscle with a small calorie surplus: aim for about ${(c.w*.0025).toFixed(2)} kg a week.`:`You are in a healthy range. The aim now is to keep fat steady while building strength and fitness.`;
+s+=c.goal==='lose'?`A healthy target is about ${c.target}%, which means losing roughly <strong>${diff.toFixed(1)} kg of fat</strong> (to about ${tW.toFixed(0)} kg) while keeping your muscle. At ${c.pace} kg a week that takes around ${Math.ceil(weeks)} weeks.`:c.goal==='gain'?`You have little fat to spare. The priority is gaining muscle with a small calorie surplus: aim for about ${(c.w*.0025).toFixed(2)} kg a week.`:`You are in a healthy range. The aim now is to keep fat steady while building strength and fitness.`;
 if(c.auto)s+=` The system picked <strong>${{lose:'fat loss',keep:'maintain and tone',gain:'muscle gain'}[c.goal]}</strong> as your goal.`;
 $('summary').innerHTML=s;
-const rate=c.goal==='lose'?((c.tdee-c.kcal)*7/7700).toFixed(2)+' kg/week loss':c.goal==='gain'?'≈0.25 kg/week gain':'steady';
-$('kv').innerHTML=[['BMI (Asian cut-offs)',c.bmi.toFixed(1)+' · '+bmiClass(c.bmi)],['Waist-to-height ratio',c.whtr?c.whtr.toFixed(2)+(c.whtr>=.6?' · high':c.whtr>=.5?' · raised':' · healthy'):'add waist above'],['Calories burned at rest (BMR)',fmt(c.bmr)+' kcal'],['Calories burned per day',fmt(c.tdee)+' kcal'],['Daily target',fmt(c.kcal)+' kcal'],['Expected pace',rate]].map(([a,b])=>`<span>${a}</span><b>${b}</b>`).join('');
+const rate=c.goal==='lose'?c.pace+' kg/week loss':c.goal==='gain'?'≈0.25 kg/week gain':'steady';
+$('kv').innerHTML=[['BMI (Asian cut-offs)',c.bmi.toFixed(1)+' · '+bmiClass(c.bmi)],['Waist-to-height ratio',c.whtr?c.whtr.toFixed(2)+(c.whtr>=.6?' · high':c.whtr>=.5?' · raised':' · healthy'):'add waist above'],['Calories burned at rest (BMR)',fmt(c.bmr)+' kcal'],['Calories burned per day (no exercise)',fmt(c.tdee)+' kcal'],['Extra burned by cardio (above resting)',fmt(c.ex)+' kcal/day avg'],['Daily food target',fmt(c.kcal)+' kcal'],...(c.goal==='lose'?[['Deficit from food + cardio',fmt(c.dietDef+c.ex+(c.extraWalk*wo.walkNet))+' kcal/day']]:[]),['Expected pace',rate]].map(([a,b])=>`<span>${a}</span><b>${b}</b>`).join('');
+/* projection */
+const step=c.goal==='lose'?-c.pace:c.goal==='gain'?.25:0,fatShare=c.goal==='gain'?.5:.9;
+const rows=[];for(let wk=0;wk<=52;wk+=4){let dw=step*wk;if(c.goal==='lose'&&c.w+dw<tW)dw=tW-c.w;const nw=c.w+dw,nf=Math.max(1,c.fat+dw*fatShare);rows.push([wk,nw,nf/nw*100]);if((c.goal==='lose'&&nw<=tW+.01)||rows.length>=7)break}
+const mx=Math.max(...rows.map(r=>r[1])),mn=Math.min(...rows.map(r=>r[1]))*.9;
+$('projNote').textContent=c.goal==='lose'?`At ${c.pace} kg a week, assuming you lift and hit your protein so most of the loss is fat. Weeks 1–2 often drop faster (water); later weeks slow a little.`:c.goal==='gain'?'Slow lean gain of about 0.25 kg a week; about half of it muscle for a beginner.':'Weight stays steady while body fat drifts down with training.';
+$('proj').innerHTML=step?rows.map(([wk,nw,b],i)=>`<div class="pr${i===rows.length-1&&c.goal==='lose'?' t':''}"><span>${wk?'Week '+wk:'Today'}</span><i style="width:${Math.max(8,(nw-mn)/(mx-mn)*100)}%"></i><b>${nw.toFixed(1)} kg · ${b.toFixed(1)}%</b></div>`).join(''):'';
 const col={Low:'var(--lo)',Moderate:'var(--md)',High:'var(--hi)'};
 $('risks').innerHTML=risks(c).map(r=>`<div class="risk"><h3>${r.n}</h3><div class="meter"><i style="width:${Math.max(6,r.s*100)}%;background:${col[r.l]}"></i></div><div class="lvl" style="color:${col[r.l]}">${r.l}</div><p>${r.why}</p></div>`).join('');
 
 /* map */
 const minB=c.m?6:14,lv=[-15,-10,-5,0,5,10,15].map(d=>c.bf+d).filter(x=>x>=minB&&x<=55);
-$('map').innerHTML=lv.map((b,i)=>{const w=c.lbm/(1-b/100),d=w-c.w,cur=Math.abs(b-c.bf)<.01;const wk=Math.ceil(Math.abs(d)/(d<0?.5:.25));const healthy=b>=(c.m?10:18)&&b<=(c.m?20:28);
-return `<div class="mfig${cur?' cur':''}">${figure(c.sex,b,'mg'+i,cur?'#ff6b2c':fig,cur?'#ffd2bd':cs.getPropertyValue('--fig2').trim()||'#5866d6')}<b>${b.toFixed(0)}%</b><span>${w.toFixed(0)} kg${cur?'':` (${d>0?'+':''}${d.toFixed(0)} kg)`}</span><span>${cur?'You now':d<0?'~'+wk+' weeks':'if habits slip'}</span><em>${cur?'Current':healthy?'Healthy range':cat(c.sex,b)}</em></div>`}).join('');
+$('map').innerHTML=lv.map((b,i)=>{const w=c.lbm/(1-b/100),d=w-c.w,cur=Math.abs(b-c.bf)<.01;const wk=Math.ceil(Math.abs(d)/(d<0?(c.pace||.5):.25));const healthy=b>=c.lowBF&&b<c.hiBF;
+return `<div class="mfig${cur?' cur':''}">${figure(c.sex,b,'mg'+i,cur?'#ff6b2c':fig,cur?'#ffd2bd':cs.getPropertyValue('--fig2').trim()||'#5866d6')}<b>${b.toFixed(0)}%</b><span>${w.toFixed(0)} kg${cur?'':` (${d>0?'+':''}${d.toFixed(0)} kg)`}</span><span>${cur?'You now':d<0?'~'+wk+' weeks':'if habits slip'}</span><em>${cur?'Current':healthy?'Healthy range':cat(c.sex,b,c.age)}</em></div>`}).join('');
 requestAnimationFrame(()=>{const m=$('map'),el=m.querySelector('.cur');if(el)m.scrollLeft=el.offsetLeft-m.clientWidth/2+el.clientWidth/2});
 
 /* workout */
-const wo=workout(c),place=S.place,split=SPLIT[wo.days];
+const place=S.place,split=SPLIT[wo.days];
 $('woTitle').textContent=place==='gym'?`Workout plan: ${wo.days} gym days a week`:`Workout plan: ${wo.days} home strength days a week`;
-$('woSub').textContent=`Based on your ${['beginner','intermediate','experienced'][c.exp]} level, age and goal, you need about ${(wo.weekMin/60).toFixed(1)} hours a week: ${wo.days} strength sessions of ${wo.sMin} min and ${wo.cDays} cardio session${wo.cDays>1?'s':''} of ${wo.per} min. Fewer days slows results; more adds fatigue before it adds results. Cardio is ${wo.lowImpact?'kept low-impact (walking, cycling, incline walk) to protect your joints':'a mix of brisk walking and running'}.`;
-$('woFigs').innerHTML=[[(wo.weekMin/60).toFixed(1)+' hrs','Exercise time per week'],[wo.days+' days','Strength training · '+wo.sMin+' min each'],[wo.cardioMin+' min','Cardio per week'],[wo.steps.toLocaleString('en-IN'),'Steps per day'],[wo.per+' min','Each cardio session']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+$('woSub').textContent=`Based on your ${['beginner','intermediate','experienced'][c.exp]} level, age and goal, ${c.goal==='lose'?`and a pace of ${c.pace} kg a week, `:''}you need about ${(wo.weekMin/60).toFixed(1)} hours a week: ${wo.days} strength sessions of ${wo.sMin} min and ${wo.cDays} cardio session${wo.cDays>1?'s':''} of ${wo.per} min. Fewer days slows results; more adds fatigue before it adds results. Cardio is ${wo.lowImpact?'kept low-impact to protect your joints':'a mix of incline walking, cross trainer and intervals'}.${c.extraWalk?` Plus ${c.extraWalk} min of extra brisk walking a day to hold your pace.`:''}`;
+$('woFigs').innerHTML=[[(wo.weekMin/60).toFixed(1)+' hrs','Exercise time per week'],[wo.days+' days','Strength training · '+wo.sMin+' min each'],[wo.cardioMin+' min','Cardio per week'],[fmt(wo.grossWeek)+' kcal','Burned by cardio per week'],[wo.steps.toLocaleString('en-IN'),'Steps per day']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
 const slots=SLOTS[wo.days];let ci=0;
 $('week').innerHTML=DAYS.map((d,i)=>{const k=slots.indexOf(i);
-if(k>=0)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--fig)"></i>${split[k]}${wo.fin?` + ${wo.fin} min cardio`:''}</span><span class="m">${wo.sMin} min</span></li>`;
+if(k>=0)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--fig)"></i>${split[k]}${wo.fin?` + ${wo.fin} min ${wo.finP.n.toLowerCase()}`:''}</span><span class="m">${wo.sMin} min · ~${fmt(wo.lift+(wo.fin?wo.finS.g:0))} kcal</span></li>`;
 if(i===6||ci>=wo.cDays)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--line)"></i>Rest: easy walk, stretching</span><span class="m">${(wo.steps*.7/1000).toFixed(0)}k steps</span></li>`;
-ci++;return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--acc)"></i>Cardio: ${wo.lowImpact?'brisk or incline walk':ci%2?'brisk walk':'run–walk intervals'}</span><span class="m">${wo.per} min</span></li>`}).join('');
-const met=(M,min)=>Math.round(M*3.5*c.w/200*min);
-const walkDay=r5(Math.max(30,wo.cardioMin/7+10));
-const run=!wo.lowImpact;
-$('cardio').innerHTML=`<div class="card"><h3>Option A: walking only</h3><ul><li>Brisk walk <b>${walkDay} min every day</b> <span>(5–6 km/h, slightly out of breath)</span></li><li>Hit <b>${wo.steps.toLocaleString('en-IN')} steps</b> a day in total</li><li>Burns about <b>${fmt(met(4.3,walkDay*7))} kcal</b> a week</li><li>Add 20 squats and 10 push-ups after each walk</li></ul></div>`+
-(run?`<div class="card"><h3>Option B: running</h3><ul><li>Weeks 1–3: run 1 min, walk 2 min × 8 <span>(24 min)</span>, 3 days a week</li><li>Weeks 4–8: run 3 min, walk 1 min × 6, building to a 25–30 min easy run</li><li>Walk ${r5(walkDay*.7)} min on the other days</li><li>Burns about <b>${fmt(met(8,90)+met(4.3,r5(walkDay*.7)*4))} kcal</b> a week</li></ul></div>`:`<div class="card"><h3>Option B: low-impact</h3><ul><li>Running is hard on knees at your weight and age; use cycling or incline walking instead</li><li>Cycling 30–40 min, 3 days a week, plus walks on other days</li><li>Start running only once BMI is below 30</li><li>Burns about <b>${fmt(met(6,105)+met(4.3,walkDay*4))} kcal</b> a week</li></ul></div>`);
+const pp=wo.rot[ci++];return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--acc)"></i>${pp.n}: ${pp.main}</span><span class="m">${wo.per} min · ~${fmt(wo.sess(pp,wo.per).g)} kcal</span></li>`}).join('');
+const card=pp=>{const x=wo.sess(pp,wo.per);return `<div class="card"><h3>${pp.n}</h3><ul class="set"><li><span>Warm-up 5 min</span><b>${pp.n.startsWith('Tread')?'4 km/h · 0%':pp.n==='Cross trainer'?'Level 3':pp.n==='Stationary bike'?'Light resistance':'Easy walk'}</b></li><li><span>Main ${x.mm} min</span><b>${pp.main}</b></li><li><span>Cool-down 3 min</span><b>easy pace</b></li></ul><p class="burn"><b>~${fmt(x.g)} kcal</b> in ${wo.per} min · ${Math.round(x.g/wo.per*10)} kcal per 10 min</p><p class="note">${pp.tip}</p></div>`};
+const eqWalk=r5(wo.sess(wo.P[0],wo.per).g/wo.walkGross);
+$('cardioH').textContent=place==='gym'?'Gym cardio: machine settings':'Cardio at home or outdoors';
+$('cardio').innerHTML=wo.P.map(card).join('')+(place==='gym'?`<div class="card"><h3>Can't reach the gym?</h3><ul><li>A brisk walk of <b>${eqWalk} min</b> at 5.5 km/h burns about the same as one ${wo.P[0].n.toLowerCase()} session</li><li>Keep your <b>${wo.steps.toLocaleString('en-IN')} steps</b> a day either way</li><li>Calories are for your weight (${c.w} kg), from ACSM equations; machine displays often read 10–20% high</li></ul></div>`:`<div class="card"><h3>Daily walking</h3><ul><li>Aim for <b>${wo.steps.toLocaleString('en-IN')} steps</b> a day in total</li><li>A 10-minute walk after each meal helps blood sugar</li><li>Calories are for your weight (${c.w} kg), from ACSM walking and running equations</li></ul></div>`);
 const uniq=[...new Set(split)];
-$('sess').innerHTML=uniq.map(n=>`<div class="card"><h3>${n} <span class="note">· ${place==='gym'?'gym':'home'}</span></h3><ol>${EX[place][n].map(e=>{const[a,b]=e.split('|');return `<li>${a} <span>${b}</span></li>`}).join('')}</ol></div>`).join('')+`<div class="card"><h3>How to progress</h3><ul><li>Rest 60–90 s between sets (2 min on heavy lifts)</li><li>When you hit the top of the rep range on all sets, add 2.5 kg or a harder variation</li><li>Warm up 5 min first; stop 1–2 reps before failure</li><li>Sleep 7–8 hours: fat loss and muscle gain both stall without it</li></ul></div>`;
+$('sess').innerHTML=uniq.map(n=>`<div class="card"><h3>${n} <span class="note">· ${wo.sMin} min · ~${fmt(wo.lift+(wo.fin?wo.finS.g:0))} kcal</span></h3><p class="note" style="margin-top:6px">Warm-up: 5 min ${place==='gym'?'cross trainer, level 3':'brisk march and arm circles'}, then 1 light set of the first exercise</p><ol>${EX[place][n].map(e=>{const[a,b]=e.split('|');return `<li>${a} <span>${b}</span></li>`}).join('')}${wo.fin?`<li>Finisher: ${wo.finP.n.toLowerCase()} <span>${wo.fin} min · ${wo.finP.main}</span></li>`:''}</ol></div>`).join('')+`<div class="card"><h3>How to progress</h3><ul><li>Rest 60–90 s between sets (2 min on heavy lifts)</li><li>When you hit the top of the rep range on all sets, add 2.5 kg or a harder variation</li><li>Warm up 5 min first; stop 1–2 reps before failure</li><li>Sleep 7–8 hours: fat loss and muscle gain both stall without it</li></ul></div>`;
 
 /* diet */
 const p=plan(c);
@@ -431,7 +485,8 @@ save()}
 /* ---------- controls & storage ---------- */
 function seg(id,key){const el=$(id);const set=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S[key]));el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S[key]=b.dataset.v;set();render()});return set}
 function save(){try{const o={...S};fields.forEach(k=>o[k]=$(k).value);localStorage.setItem('bodycheck',JSON.stringify(o))}catch(e){}}
-try{const o=JSON.parse(localStorage.getItem('bodycheck')||'null');if(o){['sex','place','diet','bud'].forEach(k=>{if(o[k])S[k]=o[k]});fields.forEach(k=>{if(o[k]!=null&&o[k]!=='')$(k).value=o[k]});if(o.waist||o.neck)$('tape').open=true}}catch(e){}
+try{const o=JSON.parse(localStorage.getItem('bodycheck')||'null');if(o){['sex','place','diet','bud','pace'].forEach(k=>{if(o[k])S[k]=o[k]});fields.forEach(k=>{if(o[k]!=null&&o[k]!=='')$(k).value=o[k]});if(o.waist||o.neck)$('tape').open=true}}catch(e){}
+$('paceSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.pace=b.dataset.v;render()});
 const sets=[seg('sexSeg','sex'),seg('placeSeg','place'),seg('dietSeg','diet'),seg('budSeg','bud')];
 sets.forEach(f=>f());
 $('f').addEventListener('input',render);
