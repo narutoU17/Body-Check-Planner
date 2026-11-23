@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Body Check Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday health tool: clear, direct, a little clinical
+   IDEA the printed body-composition report a gym scanner hands you, made live
+   PICTURE a body silhouette drawn from your body-fat %, plus a ladder of figures at every 5% step
+   COLOUR indigo band, white ground, orange accent for "you", amber/red for risk
+   TYPE Archivo 800 display + Archivo text
+   LAYOUT laptop: inputs left, live result right; phone: title, figure, inputs, then sections */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0d1020);--ink:light-dark(#12142a,#eceeff);--mut:light-dark(#5a5f7d,#a3a8c8);--line:light-dark(#e2e4f0,#272c4d);--panel:light-dark(#f4f5fb,#151a33);--band:light-dark(#1c2785,#111857);--acc:#ff6b2c;--acc2:#ffb08a;--fig:light-dark(#2433a8,#8f9dff);--fig2:light-dark(#5866d6,#c3cbff);--lo:light-dark(#6b8fd6,#7c9be0);--md:#e9a23b;--hi:#e5484d}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,4.4vw,48px)}
+h2{font-size:clamp(26px,3vw,36px);margin-bottom:6px}
+h3{font-size:18px;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:1240px;margin:0 auto}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.top{background:var(--band);color:#fff}
+.top .lede{color:#c9cff8;margin-top:8px;max-width:60ch}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-areas:"form res";gap:28px;margin-top:26px;align-items:stretch}
+.form{grid-area:form;background:var(--bg);color:var(--ink);border-radius:16px;padding:22px;display:grid;gap:16px;align-content:start}
+.res{grid-area:res;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);gap:18px;align-items:center}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+label{display:grid;gap:5px;font-size:14px;font-weight:600;color:var(--mut)}
+input,select{font:500 16px Archivo,system-ui,sans-serif;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 auto;font:600 15px Archivo,sans-serif;min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--fig);border-color:var(--fig);color:var(--bg)}
+.seg button:hover{border-color:var(--fig2)}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
+.note{font-size:13px;color:var(--mut)}
+.top .note{color:#aeb6ec}
+.figbox{position:relative;height:clamp(320px,40vw,430px)}
+.figbox svg{position:absolute;inset:0;width:100%;height:100%}
+.big{font-size:clamp(64px,8vw,96px);font-weight:800;line-height:.95;letter-spacing:-.04em;white-space:nowrap}
+.big small{font-size:.38em;letter-spacing:0;margin-left:4px}
+.chip{display:inline-block;background:var(--acc);color:#1a0d05;font-weight:800;border-radius:999px;padding:4px 12px;font-size:15px;margin:10px 0 4px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;margin-top:18px;border-top:1px solid #ffffff33;padding-top:16px}
+.stats b{display:block;font-size:24px;font-weight:800;white-space:nowrap}
+.stats span{font-size:13px;color:#c9cff8}
+.sec{border-bottom:1px solid var(--line)}
+.sub{color:var(--mut);max-width:70ch}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:32px;margin-top:22px}
+.summary{font-size:18px;line-height:1.5}
+.summary strong{color:var(--fig)}
+.kv{display:grid;grid-template-columns:auto auto;justify-content:space-between;gap:8px 16px;margin-top:18px;padding:16px;background:var(--panel);border-radius:12px;font-size:15px}
+.kv b{text-align:right;white-space:nowrap}
+.risk{display:grid;grid-template-columns:minmax(0,1fr) 110px 82px;gap:6px 14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.risk h3{font-size:16px}
+.risk p{font-size:14px;color:var(--mut);grid-column:1/-1;margin-top:-2px}
+.meter{height:10px;border-radius:6px;background:var(--panel);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;border-radius:6px}
+.lvl{font-weight:700;font-size:14px;text-align:right;white-space:nowrap}
+.map{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(120px,1fr);gap:10px;overflow-x:auto;padding:18px 2px 6px;margin-top:10px}
+.mfig{border-radius:14px;padding:10px 8px 12px;text-align:center;border:1.5px solid transparent}
+.mfig.cur{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.mfig svg{width:100%;height:190px;display:block}
+.mfig b{font-size:22px;font-weight:800;display:block}
+.mfig span{display:block;font-size:13px;color:var(--mut);white-space:nowrap}
+.mfig em{display:inline-block;font-style:normal;font-size:12px;font-weight:700;margin-top:6px;padding:2px 8px;border-radius:999px;background:var(--panel)}
+.mfig.cur em{background:var(--acc);color:#1a0d05}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px}
+.figs div{background:var(--panel);border-radius:12px;padding:14px 16px}
+.figs b{display:block;font-size:30px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.figs span{font-size:14px;color:var(--mut)}
+.week{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.week li{display:grid;grid-template-columns:3.2em minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+.week .d{font-weight:800;font-size:20px}
+.week .t{font-weight:600}
+.week .m{color:var(--mut);font-size:14px;white-space:nowrap}
+.tag{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:1px}
+.sess{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:22px}
+.card{background:var(--panel);border-radius:14px;padding:16px 18px}
+.card ol,.card ul{margin:10px 0 0;padding-left:20px;font-size:15px}
+.card li{margin:3px 0}
+.card li span{color:var(--mut);white-space:nowrap}
+.cardio{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
+.ctrls{display:flex;flex-wrap:wrap;gap:18px 28px;margin-top:18px}
+.ctrls>div{display:grid;gap:6px;flex:1 1 260px}
+.macros{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px}
+.macros div{border-top:4px solid var(--fig);padding-top:8px}
+.macros div:first-child{border-color:var(--acc)}
+.macros b{font-size:28px;font-weight:800;display:block;white-space:nowrap}
+.macros span{font-size:14px;color:var(--mut)}
+.meals{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:22px}
+.meal h3{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.meal h3 small{font-size:13px;color:var(--mut);font-weight:600;white-space:nowrap}
+.meal table{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px}
+.meal td{padding:5px 0;border-bottom:1px solid var(--line)}
+.meal td:last-child{text-align:right;white-space:nowrap;font-weight:600;padding-left:10px}
+.cost{display:flex;flex-wrap:wrap;gap:12px 32px;align-items:baseline;margin-top:20px;padding:16px 20px;background:var(--band);color:#fff;border-radius:14px}
+.cost b{font-size:28px;font-weight:800;white-space:nowrap}
+.cost span{color:#c9cff8;font-size:14px}
+.warn{margin-top:12px;font-size:14px;padding:10px 14px;border-left:4px solid var(--md);background:var(--panel);border-radius:0 8px 8px 0}
+.foot{font-size:14px;color:var(--mut)}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"res" "form"}.two{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.res{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.figbox{height:300px}.big{font-size:56px}.stats b{font-size:20px}.risk{grid-template-columns:minmax(0,1fr) 70px 74px}}
+@media(prefers-reduced-motion:no-preference){.figbox svg path,.figbox svg circle{transition:d .5s ease,r .5s ease}}
+</style>
+</head>
+<body>
+<header class="band top">
+<div class="wrap">
+<h1>Body Check Planner</h1>
+<p class="lede">Enter your height, weight, age and gender. You get your body-fat estimate, health risks to watch, a body-fat map, a weekly workout plan and an Indian diet plan for your budget.</p>
+<div class="grid">
+<div class="res" aria-live="polite">
+<div class="figbox" id="heroFig"></div>
+<div>
+<div class="big" id="bfBig">–</div>
+<div class="chip" id="bfCat">–</div>
+<p class="note" id="bfMethod"></p>
+<div class="stats" id="stats"></div>
+</div>
+</div>
+<form class="form" id="f" autocomplete="off">
+<div><label>Gender</label><div class="seg" id="sexSeg" role="group" aria-label="Gender"><button type="button" data-v="m">Male</button><button type="button" data-v="f">Female</button></div></div>
+<div class="row">
+<label for="age">Age (years)<input id="age" type="number" inputmode="numeric" min="16" max="85" value="30"></label>
+<label for="ht">Height (cm) <span id="ftTxt" class="note"></span><input id="ht" type="number" inputmode="decimal" min="130" max="220" value="172"></label>
+<label for="wt">Weight (kg)<input id="wt" type="number" inputmode="decimal" min="35" max="220" value="82"></label>
+</div>
+<div class="row">
+<label for="act">Daily activity<select id="act"><option value="1.2">Desk job, little walking</option><option value="1.375">Light: on feet some of the day</option><option value="1.55">Moderate: active job or sport</option><option value="1.725">Very active: physical work</option></select></label>
+<label for="goal">Goal<select id="goal"><option value="auto">Let the system decide</option><option value="lose">Lose fat</option><option value="keep">Maintain / tone up</option><option value="gain">Build muscle</option></select></label>
+</div>
+<div><label>Where can you train?</label><div class="seg" id="placeSeg" role="group" aria-label="Training place"><button type="button" data-v="gym">Gym</button><button type="button" data-v="home">Home / walking only</button></div></div>
+<label for="exp">Training experience<select id="exp"><option value="0">Beginner (under 6 months)</option><option value="1">Some (6 months to 2 years)</option><option value="2">Experienced (2+ years)</option></select></label>
+<details id="tape"><summary>Add tape measurements for a more accurate body fat %</summary>
+<div class="row" style="margin-top:10px">
+<label for="waist">Waist at navel (cm)<input id="waist" type="number" inputmode="decimal" placeholder="optional"></label>
+<label for="neck">Neck (cm)<input id="neck" type="number" inputmode="decimal" placeholder="optional"></label>
+<label for="hip" id="hipL">Hips, widest (cm)<input id="hip" type="number" inputmode="decimal" placeholder="women only"></label>
+</div>
+<p class="note" style="margin-top:8px">With waist and neck (plus hips for women) the tool uses the US Navy tape method, usually within 3 to 4%. Without them it estimates from BMI and age, which can be off by 5% or more for muscular or very lean people.</p>
+</details>
+<p class="note">Sample values filled in; change them and everything below updates. Inputs stay saved in this browser.</p>
+</form>
+</div>
+</div>
+</header>
+
+<section class="band sec"><div class="wrap">
+<h2 id="condTitle">Your body's current condition</h2>
+<div class="two">
+<div><p class="summary" id="summary"></p><div class="kv" id="kv"></div></div>
+<div><h3 style="font-size:22px">If nothing changes: health risks to watch</h3><p class="note" style="margin:4px 0 8px">Risk levels from body fat, BMI (Asian cut-offs), waist and age. These are odds, not a diagnosis; a blood test (sugar, HbA1c, lipids, liver) tells you where you really stand.</p><div id="risks"></div></div>
+</div>
+</div></section>
+
+<section class="band sec"><div class="wrap">
+<h2>Your body-fat map</h2>
+<p class="sub">How your body would roughly look at every 5% step, keeping your current muscle. Weight changes and time assume about 0.5 kg fat loss or 0.25 kg gain per week.</p>
+<div class="map" id="map"></div>
+</div></section>
+
+<section class="band sec"><div class="wrap">
+<h2 id="woTitle">Workout plan</h2>
+<p class="sub" id="woSub"></p>
+<div class="figs" id="woFigs"></div>
+<div class="two">
+<div><h3 style="font-size:22px;margin-bottom:6px">Your week</h3><ul class="week" id="week"></ul></div>
+<div><h3 style="font-size:22px">If you can't go to the gym: cardio on foot</h3><div class="cardio" id="cardio"></div></div>
+</div>
+<div class="sess" id="sess"></div>
+</div></section>
+
+<section class="band sec"><div class="wrap">
+<h2>Diet plan</h2>
+<p class="sub" id="dietSub"></p>
+<div class="ctrls">
+<div><label>Food type</label><div class="seg" id="dietSeg" role="group" aria-label="Food type"><button type="button" data-v="veg">Vegetarian</button><button type="button" data-v="egg">Veg + eggs</button><button type="button" data-v="non">Non-veg</button></div></div>
+<div><label>Monthly food budget</label><div class="seg" id="budSeg" role="group" aria-label="Budget"><button type="button" data-v="low">₹1k–3k</button><button type="button" data-v="mid">₹3k–5k</button><button type="button" data-v="high">₹5k–7k</button></div></div>
+</div>
+<div class="macros" id="macros"></div>
+<div class="meals" id="meals"></div>
+<div class="cost" id="cost"></div>
+<div id="dietWarn"></div>
+<div class="sess" id="eat"></div>
+</div></section>
+
+<footer class="band"><div class="wrap foot">
+<p>Formulas used: Mifflin–St Jeor for calories, Deurenberg (BMI-based) or US Navy tape method for body fat, ACE body-fat categories, Asian BMI cut-offs, WHO activity guidance of 150 to 300 minutes of cardio a week. Food prices are approximate Indian retail prices for 2026 and vary by city. This is a planning aid, not medical advice; if you have a health condition, are pregnant, or are over 60 and new to exercise, check with a doctor first.</p>
+</div></footer>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const r5=v=>Math.round(v/5)*5;
+const fmt=v=>Math.round(v).toLocaleString('en-IN');
+const S={sex:'m',place:'gym',diet:'veg',bud:'mid'};
+const fields=['age','ht','wt','act','goal','exp','waist','neck','hip'];
+
+/* ---------- body silhouette ---------- */
+function smooth(p){const L=p.length;let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;for(let i=0;i<L;i++){const a=p[(i-1+L)%L],b=p[i],c=p[(i+1)%L],e=p[(i+2)%L];const c1=[b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6],c2=[c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6];d+=`C${c1.map(v=>v.toFixed(1))} ${c2.map(v=>v.toFixed(1))} ${c[0].toFixed(1)},${c[1].toFixed(1)}`}return d+'Z'}
+function figure(sex,bf,id,c1,c2){
+const m=sex==='m',f=clamp((bf-(m?6:14))/34,0,1.15);
+const n=(m?6:5)+2*f,Sh=(m?29:24)+3*f,C=(m?25:22)+8*f,W=(m?18:15)+17*f,H=(m?21:25)+13*f;
+const R=[[n,33],[n+1,44],[Sh,52],[C,72],[W,102],[H,128],[H*.82,148],[0,154]];
+const pts=R.concat(R.slice(0,-1).reverse().map(([x,y])=>[-x,y])).map(([x,y])=>[60+x,y]);
+const hx=H*.5,tw=(m?14:15)+13*f,cw=9+5*f,uw=9+7*f,fw=7+4*f;
+const ex=Math.max(Sh+2,W+uw/2+2),wx=Math.max(Sh+4,H+fw/2+2);
+let g='';
+for(const s of [-1,1]){
+g+=`<path d="M${60+s*hx},138 L${60+s*(hx*.85+1)},198" stroke-width="${tw}"/><path d="M${60+s*(hx*.85+1)},198 L${60+s*(hx*.7+1)},244" stroke-width="${cw}"/><ellipse cx="${60+s*(hx*.7+3)}" cy="250" rx="${cw*.75}" ry="4" stroke="none"/>`;
+g+=`<path d="M${60+s*(Sh-4)},56 L${60+s*ex},100" stroke-width="${uw}"/><path d="M${60+s*ex},100 L${60+s*wx},140" stroke-width="${fw}"/><circle cx="${60+s*wx}" cy="147" r="${fw*.62}" stroke="none"/>`}
+const abs=bf<(m?15:21)?`<g stroke="${c2}" stroke-width="1" opacity=".55" fill="none"><path d="M60,74 V100"/><path d="M53,82 H67 M54,90 H66 M55,98 H65"/></g>`:'';
+return `<svg viewBox="0 0 120 262" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Body shape at ${Math.round(bf)}% body fat"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="10" y1="0" x2="110" y2="0"><stop offset="0" stop-color="${c2}"/><stop offset=".55" stop-color="${c1}"/></linearGradient></defs><ellipse cx="60" cy="254" rx="${36+8*f}" ry="4" fill="${c1}" opacity=".18"/><g fill="url(#${id})" stroke="url(#${id})" stroke-linecap="round">${g}<path d="${smooth(pts)}" stroke="none"/><circle cx="60" cy="20" r="${12+1.5*f}" stroke="none"/></g>${abs}<circle cx="60" cy="108" r="1.1" fill="${c2}" opacity=".6"/></svg>`}
+
+/* ---------- body maths ---------- */
+const CAT={m:[[6,'Very lean'],[14,'Athletic'],[18,'Fit'],[25,'Average'],[99,'Obese range']],f:[[14,'Very lean'],[21,'Athletic'],[25,'Fit'],[32,'Average'],[99,'Obese range']]};
+const cat=(sex,bf)=>CAT[sex].find(c=>bf<c[0])[1];
+function bmiClass(b){return b<18.5?'Underweight':b<23?'Normal':b<25?'Overweight':b<30?'Obese (class I)':'Obese (class II)'}
+function calc(){
+const v=k=>parseFloat($(k).value);
+const sex=S.sex,m=sex==='m',age=clamp(v('age')||30,16,85),h=clamp(v('ht')||170,130,220),w=clamp(v('wt')||70,35,220);
+const bmi=w/(h/100)**2,waist=v('waist'),neck=v('neck'),hip=v('hip');
+let bf,method='Estimated from BMI and age (Deurenberg). Add tape measurements for better accuracy.';
+if(m&&waist>neck&&neck>0){bf=495/(1.0324-0.19077*Math.log10(waist-neck)+0.15456*Math.log10(h))-450;method='US Navy tape method (waist and neck).'}
+else if(!m&&waist&&neck&&hip&&waist+hip>neck){bf=495/(1.29579-0.35004*Math.log10(waist+hip-neck)+0.221*Math.log10(h))-450;method='US Navy tape method (waist, hips and neck).'}
+else bf=1.2*bmi+0.23*age-10.8*(m?1:0)-5.4;
+bf=clamp(bf,m?4:10,60);
+const fat=w*bf/100,lbm=w-fat,whtr=waist?waist/h:null;
+const bmr=10*w+6.25*h-5*age+(m?5:-161),act=parseFloat($('act').value),tdee=bmr*act;
+const fitHi=m?18:25,avgHi=m?25:32,lowBF=m?8:17;
+let goal=$('goal').value;const auto=goal==='auto';
+if(auto)goal=bf>fitHi?'lose':(bf<(m?10:18)||bmi<18.5)?'gain':'keep';
+const floor=m?1500:1200;
+let kcal=goal==='lose'?Math.max(floor,tdee-Math.min(750,tdee*.2)):goal==='gain'?tdee+250:tdee;
+kcal=Math.round(kcal/10)*10;
+const protein=Math.round(Math.min(lbm*(goal==='keep'?1.6:1.9),w*2));
+const fatG=Math.round(kcal*.25/9),carb=Math.max(0,Math.round((kcal-protein*4-fatG*9)/4));
+const target=m?(goal==='gain'?14:16):(goal==='gain'?22:24);
+return{sex,m,age,h,w,bmi,bf,fat,lbm,whtr,waist,bmr,tdee,goal,auto,kcal,protein,fatG,carb,method,fitHi,avgHi,lowBF,target,
+exp:+$('exp').value,place:S.place}}
+
+/* ---------- risks ---------- */
+const OVER=[['Type 2 diabetes / insulin resistance',1,'Belly fat makes the body resist insulin; South Asians tend to get it at lower weights.'],
+['High blood pressure',.9,'Extra weight makes the heart push harder through more blood vessels.'],
+['High cholesterol and triglycerides',.85,'More fat tissue usually means more fat in the blood and less "good" HDL.'],
+['Fatty liver (NAFLD)',1,'Fat stores in the liver first when there is a long calorie surplus; often silent for years.'],
+['Heart disease and stroke',.7,'Builds on BP, sugar and cholesterol together; risk climbs with age.'],
+['Sleep apnea and snoring',.75,'Fat around the neck narrows the airway at night; causes tiredness in the day.'],
+['Knee and lower-back pain',.7,'Each extra kilo puts about 4 kg of load on the knees when walking.']];
+const UNDER=[['Nutrient deficiency and anaemia',1,'Too little food usually means too little iron, B12 and protein.'],
+['Weak bones (osteoporosis later)',.8,'Low body weight and low calcium reduce bone density over time.'],
+['Low immunity and slow recovery',.8,'The body has little reserve to fight infections or repair muscle.'],
+['Hormone disruption',.9,'Very low fat can lower testosterone in men and stop periods in women.']];
+function risks(c){
+const ageF=c.age>=45?.25:c.age>=35?.12:0;
+const over=Math.max(0,(c.bf-c.fitHi)/12)+Math.max(0,(c.bmi-23)/12)+(c.whtr?Math.max(0,(c.whtr-.5)*6):0);
+const under=Math.max(0,(c.lowBF-c.bf)/4)+Math.max(0,(18.5-c.bmi)/2);
+const list=under>over?UNDER:OVER.concat([[c.m?'Low testosterone':'PCOS and hormonal problems',.65,c.m?'Fat tissue converts testosterone to estrogen; low energy and libido follow.':'Excess fat worsens insulin resistance, which drives PCOS and irregular periods.']]);
+const base=under>over?under:over;
+return list.map(([n,wt,why])=>{const s=clamp(base*wt+(under>over?0:ageF*(n.startsWith('Heart')?1.6:1)*(over>0?1:.4)),0,1);return{n,why,s,l:s<.3?'Low':s<.75?'Moderate':'High'}}).sort((a,b)=>b.s-a.s)}
+
+/* ---------- workouts ---------- */
+const EX={gym:{
+'Full body A':['Goblet or back squat|3 × 8–10','Lat pulldown|3 × 10','Dumbbell bench press|3 × 10','Romanian deadlift|3 × 10','Plank|3 × 30–45 s'],
+'Full body B':['Leg press|3 × 12','Seated cable row|3 × 10','Seated dumbbell shoulder press|3 × 10','Hip thrust|3 × 10','Dead bug|3 × 10 each side'],
+'Upper':['Bench press|4 × 6–8','Lat pulldown or pull-up|4 × 8','Seated shoulder press|3 × 10','Chest-supported row|3 × 10','Biceps curl + triceps pushdown|2 × 12 each'],
+'Lower':['Back squat|4 × 6–8','Romanian deadlift|3 × 8','Walking lunge|3 × 10 each leg','Leg curl|3 × 12','Standing calf raise|3 × 15'],
+'Push':['Incline dumbbell press|4 × 8','Machine chest press|3 × 10','Lateral raise|3 × 15','Overhead triceps extension|3 × 12','Cable fly|2 × 15'],
+'Pull':['Deadlift or rack pull|3 × 5','Pull-up or lat pulldown|4 × 8','One-arm dumbbell row|3 × 10','Face pull|3 × 15','Hammer curl|3 × 12'],
+'Legs':['Front or hack squat|4 × 8','Bulgarian split squat|3 × 10 each','Leg extension|3 × 12','Lying leg curl|3 × 12','Hanging knee raise|3 × 12']},
+home:{
+'Full body A':['Bodyweight squat|3 × 15–20','Push-up (knees or incline if needed)|3 × max-2','Backpack row (fill with books)|3 × 12','Glute bridge|3 × 15','Plank|3 × 30–45 s'],
+'Full body B':['Reverse lunge|3 × 10 each leg','Pike push-up|3 × 8','Towel row on a door|3 × 12','Single-leg hip hinge|3 × 10 each','Mountain climbers|3 × 30 s'],
+'Upper':['Push-up|4 × max-2','Backpack row|4 × 12','Pike push-up|3 × 8','Chair dips|3 × 10','Backpack curl|3 × 12'],
+'Lower':['Bulgarian split squat on a chair|4 × 10 each','Single-leg glute bridge|3 × 12 each','Wall sit|3 × 40 s','Step-ups on stairs|3 × 12 each','Calf raise on a step|3 × 20'],
+'Push':['Decline push-up (feet on bed)|4 × max-2','Pike push-up|3 × 8','Chair dips|3 × 12','Diamond push-up|3 × max','Plank shoulder taps|3 × 20'],
+'Pull':['Towel row on a door|4 × 12','Backpack row|3 × 12','Superman hold|3 × 20 s','Backpack curl|3 × 12','Reverse snow angels|3 × 12'],
+'Legs':['Jump squat (or slow squat)|4 × 12','Reverse lunge|3 × 12 each','Hip thrust on sofa|3 × 15','Side plank|3 × 30 s each','Calf raise on a step|3 × 25']}};
+const SPLIT={2:['Full body A','Full body B'],3:['Full body A','Full body B','Full body A'],4:['Upper','Lower','Upper','Lower'],5:['Upper','Lower','Push','Pull','Legs'],6:['Push','Pull','Legs','Push','Pull','Legs']};
+const SLOTS={2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+function workout(c){
+const days=clamp([3,4,5][c.exp]-(c.age>=55?1:0)+(c.goal==='gain'&&c.exp>0?1:0),2,6);
+const rec=days;
+const obese=c.bf>=c.avgHi;
+const cardioMin=c.goal==='lose'?(obese?250:210):c.goal==='keep'?150:90;
+const steps=c.goal==='lose'?10000:c.goal==='keep'?8000:7000;
+const lowImpact=c.bmi>=30||c.age>=55;
+const fin=c.goal==='lose'?15:c.goal==='keep'?10:0;
+const cDays=Math.max(1,6-days);
+const per=Math.max(20,r5((cardioMin-days*fin)/cDays));
+const sMin=[45,55,65][c.exp]+fin;
+const weekMin=days*sMin+cDays*per;
+return{rec,days,cardioMin,steps,lowImpact,fin,per,cDays,sMin,weekMin}}
+
+/* ---------- foods: per 100 g/ml or per piece; price in ₹ ---------- */
+const F={
+roti:['Roti (whole wheat)','pc',110,3.5,22,.6,3,1,['roti','rotis']],
+rice:['Rice (cooked)','g',130,2.7,28,.3,4,25],
+oats:['Oats','g',389,13,66,7,18,10],
+poha:['Poha (dry)','g',350,7,77,1,6,10],
+dal:['Dal: toor or moong (dry)','g',345,24,58,1.5,14,10],
+rchana:['Roasted chana','g',370,22,58,5,14,10],
+soya:['Soya chunks (dry)','g',345,52,33,.5,15,10],
+paneer:['Paneer','g',265,18,4,21,42,10],
+tofu:['Tofu (firm)','g',140,15,3,8,25,25],
+curd:['Curd (dahi)','g',60,3.5,4.7,3,6,50],
+milk:['Toned milk','ml',58,3.1,4.7,3,5.6,50],
+whey:['Whey protein','pc',120,24,3,1.5,75,1,['scoop','scoops']],
+egg:['Whole eggs','pc',72,6.3,.4,5,7,1,['egg','eggs']],
+chicken:['Chicken breast (raw)','g',120,23,0,2.6,30,25],
+fish:['Fish: rohu or basa (raw)','g',110,19,0,3.5,28,25],
+peanuts:['Peanuts','g',567,26,16,49,14,5],
+sabzi:['Vegetable sabzi','g',70,2,8,3.5,5,50],
+salad:['Salad: cucumber, tomato, onion','g',25,1,5,.2,4,50],
+banana:['Banana','pc',105,1.3,27,.4,6,1,['banana','bananas']],
+fruit:['Seasonal fruit','g',55,.5,14,.2,12,50],
+oil:['Oil or ghee for cooking','pc',45,0,0,5,1.2,1,['tsp','tsp']],
+sprouts:['Moong sprouts','g',105,7.5,18,.5,10,25],
+besan:['Besan chilla (besan, dry)','g',387,22,58,6.7,10,10],
+almonds:['Almonds','g',579,21,22,50,100,5],
+bread:['Brown bread','pc',70,3,12,1,4,1,['slice','slices']]};
+const B='Breakfast',L='Lunch',SN='Evening snack',D='Dinner',O='Cooking fat (whole day)';
+const T={
+'veg-low':[[B,'poha:60:c peanuts:15:x milk:200:p'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c soya:30:p sabzi:150:x'],[O,'oil:4:x']],
+'veg-mid':[[B,'besan:50:p curd:100:p fruit:100:x'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'sprouts:100:p milk:200:p'],[D,'roti:2:c paneer:50:p soya:25:p sabzi:150:x'],[O,'oil:3:x']],
+'veg-high':[[B,'oats:50:c milk:250:p whey:1:p fruit:100:x almonds:15:x'],[L,'roti:2:c rice:100:c dal:40:p sabzi:150:x salad:150:x curd:150:p'],[SN,'sprouts:100:p fruit:100:x'],[D,'roti:2:c tofu:150:p paneer:50:p sabzi:150:x'],[O,'oil:3:x']],
+'egg-low':[[B,'bread:2:c egg:2:p milk:150:p'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:100:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c egg:2:p soya:20:p sabzi:150:x'],[O,'oil:4:x']],
+'egg-mid':[[B,'egg:3:p bread:2:c fruit:100:x'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'sprouts:100:p milk:200:p'],[D,'roti:2:c paneer:80:p sabzi:150:x'],[O,'oil:3:x']],
+'egg-high':[[B,'oats:50:c milk:250:p egg:3:p fruit:100:x almonds:15:x'],[L,'roti:2:c rice:100:c dal:40:p sabzi:150:x salad:150:x curd:150:p'],[SN,'whey:1:p fruit:100:x'],[D,'roti:2:c tofu:150:p egg:2:p sabzi:150:x'],[O,'oil:3:x']],
+'non-low':[[B,'bread:2:c egg:2:p milk:150:p'],[L,'rice:150:c roti:1:c dal:30:p soya:20:p sabzi:150:x curd:100:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c chicken:75:p sabzi:150:x'],[O,'oil:4:x']],
+'non-mid':[[B,'egg:3:p bread:2:c fruit:100:x'],[L,'rice:150:c dal:30:p chicken:120:p sabzi:100:x salad:100:x'],[SN,'curd:200:p fruit:100:x'],[D,'roti:2:c fish:150:p sabzi:150:x'],[O,'oil:3:x']],
+'non-high':[[B,'oats:50:c milk:250:p egg:3:p almonds:15:x'],[L,'rice:150:c chicken:150:p sabzi:150:x salad:150:x curd:150:p'],[SN,'whey:1:p fruit:100:x'],[D,'roti:2:c fish:150:p salad:100:x sabzi:100:x'],[O,'oil:3:x']]};
+const per=(k,q)=>F[k][1]==='pc'?q:q/100;
+function plan(c){
+const meals=T[S.diet+'-'+S.bud].map(([n,s])=>[n,s.split(' ').map(t=>{const[k,q,r]=t.split(':');return{k,q:+q,r}})]);
+const all=meals.flatMap(m=>m[1]);
+const fx=clamp(c.kcal/2000,.55,1);for(const x of all)if(x.r==='x'){const st=F[x.k][7];x.q=Math.max(st,Math.round(x.q*fx/st)*st)}
+const sum=(role,i,mult)=>all.filter(x=>!role||x.r===role).reduce((t,x)=>t+F[x.k][i]*per(x.k,x.q*(mult?mult(x):1)),0);
+let a=1,b=1;
+for(let i=0;i<8;i++){a=clamp((c.protein-sum('x',3)-b*sum('c',3))/sum('p',3),.4,2.4);b=clamp((c.kcal-sum('x',2)-a*sum('p',2))/sum('c',2),.35,2.6);if(sum('x',2)+a*sum('p',2)+b*sum('c',2)>c.kcal*1.03)a=clamp((c.kcal*1.03-sum('x',2)-b*sum('c',2))/sum('p',2),.4,a)}
+for(const x of all){const st=F[x.k][7],m=x.r==='p'?a:x.r==='c'?b:1;x.q=Math.max(st,Math.round(x.q*m/st)*st)}
+const tot=i=>sum(null,i);
+/* keep inside the chosen budget: trim the costliest protein foods, refill protein with soya */
+const cap={low:3000,mid:5000,high:7000}[S.bud]/30*.98;
+const keep=['soya','dal','roti','rice','sabzi','salad','oil','poha','bread','oats','besan','rchana'];
+let soy=all.find(x=>x.k==='soya');
+for(let i=0;i<80&&tot(6)>cap;i++){
+const c2=all.filter(x=>!keep.includes(x.k)&&x.q>F[x.k][7]);if(!c2.length)break;
+const ppp=x=>F[x.k][6]/(F[x.k][3]+.01);c2.sort((u,v)=>ppp(v)-ppp(u));
+const x=c2[0],st=F[x.k][7],lost=F[x.k][3]*per(x.k,st);x.q-=st;
+if(!soy){soy={k:'soya',q:0,r:'p'};meals.find(m=>m[0]===D)[1].push(soy);all.push(soy)}
+soy.q=Math.round((soy.q+lost/0.52)/5)*5}
+for(const m of meals)m[1]=m[1].filter(x=>x.q>0);
+return{meals,k:tot(2),p:tot(3),cost:tot(6),cap:cap*30/.98}}
+const qty=(k,q)=>{const u=F[k][1];return u==='pc'?`${q} ${F[k][8][q===1?0:1]}`:`${q} ${u}`};
+
+/* ---------- render ---------- */
+function render(){
+const c=calc(),cs=getComputedStyle(document.documentElement);
+const fig=cs.getPropertyValue('--fig').trim()||'#2433a8';
+$('ftTxt').textContent=`(${Math.floor(c.h/30.48)}′${Math.round(c.h/2.54%12)}″)`;
+$('hipL').style.display=c.m?'none':'';
+$('heroFig').innerHTML=figure(c.sex,c.bf,'gh','#ff6b2c','#ffd2bd');
+$('bfBig').innerHTML=`${c.bf.toFixed(1)}<small>% body fat</small>`;
+$('bfCat').textContent=cat(c.sex,c.bf);
+$('bfMethod').textContent=c.method;
+const gl={lose:'to lose fat',keep:'to maintain',gain:'to build muscle'}[c.goal];
+$('stats').innerHTML=[[c.bmi.toFixed(1),'BMI · '+bmiClass(c.bmi)],[c.fat.toFixed(1)+' kg','Fat mass'],[c.lbm.toFixed(1)+' kg','Lean mass (muscle, bone, water)'],[fmt(c.kcal)+' kcal','Eat per day '+gl]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+
+/* condition */
+const tW=c.lbm/(1-c.target/100),diff=c.w-tW,weeks=Math.abs(diff)/(diff>0?.5:.25);
+const who=c.m?'men':'women',catTxt=cat(c.sex,c.bf);
+let s=`At <strong>${c.bf.toFixed(1)}% body fat</strong> you are in the <strong>${catTxt.toLowerCase()}</strong> group for ${who}. `;
+s+=c.goal==='lose'?`A healthy target is about ${c.target}%, which means losing roughly <strong>${diff.toFixed(1)} kg of fat</strong> (to about ${tW.toFixed(0)} kg) while keeping your muscle. At a steady pace that takes around ${Math.ceil(weeks)} weeks.`:c.goal==='gain'?`You have little fat to spare. The priority is gaining muscle with a small calorie surplus: aim for about ${(c.w*.0025).toFixed(2)} kg a week.`:`You are in a healthy range. The aim now is to keep fat steady while building strength and fitness.`;
+if(c.auto)s+=` The system picked <strong>${{lose:'fat loss',keep:'maintain and tone',gain:'muscle gain'}[c.goal]}</strong> as your goal.`;
+$('summary').innerHTML=s;
+const rate=c.goal==='lose'?((c.tdee-c.kcal)*7/7700).toFixed(2)+' kg/week loss':c.goal==='gain'?'≈0.25 kg/week gain':'steady';
+$('kv').innerHTML=[['BMI (Asian cut-offs)',c.bmi.toFixed(1)+' · '+bmiClass(c.bmi)],['Waist-to-height ratio',c.whtr?c.whtr.toFixed(2)+(c.whtr>=.6?' · high':c.whtr>=.5?' · raised':' · healthy'):'add waist above'],['Calories burned at rest (BMR)',fmt(c.bmr)+' kcal'],['Calories burned per day',fmt(c.tdee)+' kcal'],['Daily target',fmt(c.kcal)+' kcal'],['Expected pace',rate]].map(([a,b])=>`<span>${a}</span><b>${b}</b>`).join('');
+const col={Low:'var(--lo)',Moderate:'var(--md)',High:'var(--hi)'};
+$('risks').innerHTML=risks(c).map(r=>`<div class="risk"><h3>${r.n}</h3><div class="meter"><i style="width:${Math.max(6,r.s*100)}%;background:${col[r.l]}"></i></div><div class="lvl" style="color:${col[r.l]}">${r.l}</div><p>${r.why}</p></div>`).join('');
+
+/* map */
+const minB=c.m?6:14,lv=[-15,-10,-5,0,5,10,15].map(d=>c.bf+d).filter(x=>x>=minB&&x<=55);
+$('map').innerHTML=lv.map((b,i)=>{const w=c.lbm/(1-b/100),d=w-c.w,cur=Math.abs(b-c.bf)<.01;const wk=Math.ceil(Math.abs(d)/(d<0?.5:.25));const healthy=b>=(c.m?10:18)&&b<=(c.m?20:28);
+return `<div class="mfig${cur?' cur':''}">${figure(c.sex,b,'mg'+i,cur?'#ff6b2c':fig,cur?'#ffd2bd':cs.getPropertyValue('--fig2').trim()||'#5866d6')}<b>${b.toFixed(0)}%</b><span>${w.toFixed(0)} kg${cur?'':` (${d>0?'+':''}${d.toFixed(0)} kg)`}</span><span>${cur?'You now':d<0?'~'+wk+' weeks':'if habits slip'}</span><em>${cur?'Current':healthy?'Healthy range':cat(c.sex,b)}</em></div>`}).join('');
+requestAnimationFrame(()=>{const m=$('map'),el=m.querySelector('.cur');if(el)m.scrollLeft=el.offsetLeft-m.clientWidth/2+el.clientWidth/2});
+
+/* workout */
+const wo=workout(c),place=S.place,split=SPLIT[wo.days];
+$('woTitle').textContent=place==='gym'?`Workout plan: ${wo.days} gym days a week`:`Workout plan: ${wo.days} home strength days a week`;
+$('woSub').textContent=`Based on your ${['beginner','intermediate','experienced'][c.exp]} level, age and goal, you need about ${(wo.weekMin/60).toFixed(1)} hours a week: ${wo.days} strength sessions of ${wo.sMin} min and ${wo.cDays} cardio session${wo.cDays>1?'s':''} of ${wo.per} min. Fewer days slows results; more adds fatigue before it adds results. Cardio is ${wo.lowImpact?'kept low-impact (walking, cycling, incline walk) to protect your joints':'a mix of brisk walking and running'}.`;
+$('woFigs').innerHTML=[[(wo.weekMin/60).toFixed(1)+' hrs','Exercise time per week'],[wo.days+' days','Strength training · '+wo.sMin+' min each'],[wo.cardioMin+' min','Cardio per week'],[wo.steps.toLocaleString('en-IN'),'Steps per day'],[wo.per+' min','Each cardio session']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+const slots=SLOTS[wo.days];let ci=0;
+$('week').innerHTML=DAYS.map((d,i)=>{const k=slots.indexOf(i);
+if(k>=0)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--fig)"></i>${split[k]}${wo.fin?` + ${wo.fin} min cardio`:''}</span><span class="m">${wo.sMin} min</span></li>`;
+if(i===6||ci>=wo.cDays)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--line)"></i>Rest: easy walk, stretching</span><span class="m">${(wo.steps*.7/1000).toFixed(0)}k steps</span></li>`;
+ci++;return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--acc)"></i>Cardio: ${wo.lowImpact?'brisk or incline walk':ci%2?'brisk walk':'run–walk intervals'}</span><span class="m">${wo.per} min</span></li>`}).join('');
+const met=(M,min)=>Math.round(M*3.5*c.w/200*min);
+const walkDay=r5(Math.max(30,wo.cardioMin/7+10));
+const run=!wo.lowImpact;
+$('cardio').innerHTML=`<div class="card"><h3>Option A: walking only</h3><ul><li>Brisk walk <b>${walkDay} min every day</b> <span>(5–6 km/h, slightly out of breath)</span></li><li>Hit <b>${wo.steps.toLocaleString('en-IN')} steps</b> a day in total</li><li>Burns about <b>${fmt(met(4.3,walkDay*7))} kcal</b> a week</li><li>Add 20 squats and 10 push-ups after each walk</li></ul></div>`+
+(run?`<div class="card"><h3>Option B: running</h3><ul><li>Weeks 1–3: run 1 min, walk 2 min × 8 <span>(24 min)</span>, 3 days a week</li><li>Weeks 4–8: run 3 min, walk 1 min × 6, building to a 25–30 min easy run</li><li>Walk ${r5(walkDay*.7)} min on the other days</li><li>Burns about <b>${fmt(met(8,90)+met(4.3,r5(walkDay*.7)*4))} kcal</b> a week</li></ul></div>`:`<div class="card"><h3>Option B: low-impact</h3><ul><li>Running is hard on knees at your weight and age; use cycling or incline walking instead</li><li>Cycling 30–40 min, 3 days a week, plus walks on other days</li><li>Start running only once BMI is below 30</li><li>Burns about <b>${fmt(met(6,105)+met(4.3,walkDay*4))} kcal</b> a week</li></ul></div>`);
+const uniq=[...new Set(split)];
+$('sess').innerHTML=uniq.map(n=>`<div class="card"><h3>${n} <span class="note">· ${place==='gym'?'gym':'home'}</span></h3><ol>${EX[place][n].map(e=>{const[a,b]=e.split('|');return `<li>${a} <span>${b}</span></li>`}).join('')}</ol></div>`).join('')+`<div class="card"><h3>How to progress</h3><ul><li>Rest 60–90 s between sets (2 min on heavy lifts)</li><li>When you hit the top of the rep range on all sets, add 2.5 kg or a harder variation</li><li>Warm up 5 min first; stop 1–2 reps before failure</li><li>Sleep 7–8 hours: fat loss and muscle gain both stall without it</li></ul></div>`;
+
+/* diet */
+const p=plan(c);
+$('dietSub').textContent=`Built for ${fmt(c.kcal)} kcal and ${c.protein} g protein a day. Portions are scaled to hit your numbers; swap foods within a meal freely as long as the protein source stays.`;
+$('macros').innerHTML=[[fmt(c.kcal)+' kcal','Calories per day'],[c.protein+' g','Protein · '+(c.protein/c.w).toFixed(1)+' g per kg'],[c.carb+' g','Carbohydrates'],[c.fatG+' g','Fat'],['3–4 L','Water']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+$('meals').innerHTML=p.meals.map(([n,items])=>{const k=items.reduce((t,x)=>t+F[x.k][2]*per(x.k,x.q),0),pr=items.reduce((t,x)=>t+F[x.k][3]*per(x.k,x.q),0);
+return `<div class="card meal"><h3>${n}<small>${fmt(k)} kcal · ${Math.round(pr)} g protein</small></h3><table>${items.map(x=>`<tr><td>${F[x.k][0]}</td><td>${qty(x.k,x.q)}</td></tr>`).join('')}</table></div>`}).join('');
+const band={low:'₹1k–3k plan: dal, soya, eggs, seasonal produce',mid:'₹3k–5k plan: adds paneer, chicken, fish',high:'₹5k–7k plan: adds whey, tofu, nuts'}[S.bud];
+$('cost').innerHTML=`<div><b>₹${fmt(p.cost)}</b> <span>per day</span></div><div><b>₹${fmt(p.cost*30)}</b> <span>per month (approx.)</span></div><div><span>${band} · totals ${fmt(p.k)} kcal, ${Math.round(p.p)} g protein</span></div>`;
+const short=c.protein-p.p,over=p.cost*30>p.cap;
+$('dietWarn').innerHTML=(over?`<p class="warn">Your calorie needs are high, so even the cheapest version of this plan costs about ₹${fmt(p.cost*30)} a month, a little above the ₹${fmt(p.cap)} limit. Picking the next budget range, or more dal and soya in place of milk and eggs, brings it closer.</p>`:'')+(short>12?`<p class="warn">This plan reaches ${Math.round(p.p)} g of your ${c.protein} g protein target without going over your calories. To close the gap, ${S.diet==='veg'?'add 20–30 g more soya chunks or a scoop of whey; both give a lot of protein for few calories':'add egg whites, or swap paneer and dal for chicken or fish'}.</p>`:'')+(Math.abs(p.k-c.kcal)>c.kcal*.08?`<p class="warn">Portions round to whole rotis and eggs, so this lands at ${fmt(p.k)} kcal against your ${fmt(c.kcal)} target. Drop or add one roti to adjust.</p>`:'');
+const more=S.diet==='veg'?['Dal, chana, rajma, soya at two meals a day','Paneer, tofu, curd, milk for protein','Sabzi and salad filling half the plate','Whole wheat, bajra, jowar rotis']:S.diet==='egg'?['2–4 eggs a day (boiled, bhurji, omelette)','Dal, chana and curd every day','Sabzi and salad filling half the plate','Whole grain rotis over maida']:['Chicken breast, fish, eggs (grilled, curry, tandoori)','Dal and curd every day','Sabzi and salad filling half the plate','Rice in measured portions, not unlimited'];
+const less=['Sugary chai: cut to 1 cup a day, less sugar','Fried snacks: samosa, farsan, bhajiya, namkeen','Sweets, cold drinks, packaged juice','Maida: bakery items, white bread, biscuits',c.goal==='gain'?'Skipping meals: eat every 3–4 hours':'Late-night eating after dinner'];
+$('eat').innerHTML=`<div class="card"><h3>Eat more of</h3><ul>${more.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="card"><h3>Cut down on</h3><ul>${less.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="card"><h3>Simple rules</h3><ul><li>Protein at every meal, about a palm-size portion</li><li>Weigh food for the first 2 weeks to learn portions</li><li>Weigh yourself 3 times a week in the morning; watch the weekly average</li><li>Re-run this tool every 4 weeks with your new weight</li></ul></div>`;
+save()}
+
+/* ---------- controls & storage ---------- */
+function seg(id,key){const el=$(id);const set=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S[key]));el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S[key]=b.dataset.v;set();render()});return set}
+function save(){try{const o={...S};fields.forEach(k=>o[k]=$(k).value);localStorage.setItem('bodycheck',JSON.stringify(o))}catch(e){}}
+try{const o=JSON.parse(localStorage.getItem('bodycheck')||'null');if(o){['sex','place','diet','bud'].forEach(k=>{if(o[k])S[k]=o[k]});fields.forEach(k=>{if(o[k]!=null&&o[k]!=='')$(k).value=o[k]});if(o.waist||o.neck)$('tape').open=true}}catch(e){}
+const sets=[seg('sexSeg','sex'),seg('placeSeg','place'),seg('dietSeg','diet'),seg('budSeg','bud')];
+sets.forEach(f=>f());
+$('f').addEventListener('input',render);
+$('f').addEventListener('submit',e=>e.preventDefault());
+new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+render();
+}
+</script>
+</body>
+</html>
