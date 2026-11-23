@@ -106,6 +106,15 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 .cost span{color:#c9cff8;font-size:14px}
 .warn{margin-top:12px;font-size:14px;padding:10px 14px;border-left:4px solid var(--md);background:var(--panel);border-radius:0 8px 8px 0}
 .foot{font-size:14px;color:var(--mut)}
+.tots{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:14px;margin-top:14px}
+.tt{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px}
+.tt th{text-align:right;font-size:13px;color:var(--mut);font-weight:600;padding:4px 0 6px 10px;border-bottom:1.5px solid var(--line)}
+.tt th:first-child,.tt td:first-child{text-align:left;padding-left:0}
+.tt td{text-align:right;padding:6px 0 6px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tt td:first-child{white-space:normal}
+.tt tr.sum td{font-weight:800;border-bottom:0;border-top:1.5px solid var(--ink)}
+.ok{color:var(--lo)}.lo{color:var(--md)}
+@media(max-width:860px){.tots{grid-template-columns:minmax(0,1fr)}}
 .pr{display:grid;grid-template-columns:5.5em minmax(0,1fr) auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
 .pr i{display:block;height:12px;border-radius:6px;background:var(--fig)}
 .pr.t i{background:var(--acc)}
@@ -198,6 +207,7 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 </div>
 <div class="macros" id="macros"></div>
 <div class="meals" id="meals"></div>
+<div class="tots" id="totals"></div>
 <div class="cost" id="cost"></div>
 <div id="dietWarn"></div>
 <div class="sess" id="eat"></div>
@@ -393,6 +403,7 @@ const sum=(role,i,mult)=>all.filter(x=>!role||x.r===role).reduce((t,x)=>t+F[x.k]
 let a=1,b=1;
 for(let i=0;i<8;i++){a=clamp((c.protein-sum('x',3)-b*sum('c',3))/sum('p',3),.4,2.4);b=clamp((c.kcal-sum('x',2)-a*sum('p',2))/sum('c',2),.35,2.6);if(sum('x',2)+a*sum('p',2)+b*sum('c',2)>c.kcal*1.03)a=clamp((c.kcal*1.03-sum('x',2)-b*sum('c',2))/sum('p',2),.4,a)}
 for(const x of all){const st=F[x.k][7],m=x.r==='p'?a:x.r==='c'?b:1;x.q=Math.max(st,Math.round(x.q*m/st)*st)}
+for(const m of meals){const r=m[1].find(x=>x.k==='rice'),ro=m[1].find(x=>x.k==='roti');if(r&&ro&&r.q<75){const k=F.rice[2]*r.q/100;r.q=0;ro.q+=Math.max(0,Math.round(k/F.roti[2]))}}
 const tot=i=>sum(null,i);
 /* keep inside the chosen budget: trim the costliest protein foods, refill protein with soya */
 const cap={low:3000,mid:5000,high:7000}[S.bud]/30*.98;
@@ -405,7 +416,8 @@ const x=c2[0],st=F[x.k][7],lost=F[x.k][3]*per(x.k,st);x.q-=st;
 if(!soy){soy={k:'soya',q:0,r:'p'};meals.find(m=>m[0]===D)[1].push(soy);all.push(soy)}
 soy.q=Math.round((soy.q+lost/0.52)/5)*5}
 for(const m of meals)m[1]=m[1].filter(x=>x.q>0);
-return{meals,k:tot(2),p:tot(3),cost:tot(6),cap:cap*30/.98}}
+for(const m of meals)m[1]=m[1].filter(x=>x.q>0);
+return{meals,k:tot(2),p:tot(3),c:tot(4),f:tot(5),cost:tot(6),cap:cap*30/.98}}
 const qty=(k,q)=>{const u=F[k][1];return u==='pc'?`${q} ${F[k][8][q===1?0:1]}`:`${q} ${u}`};
 
 /* ---------- render ---------- */
@@ -473,6 +485,17 @@ $('dietSub').textContent=`Built for ${fmt(c.kcal)} kcal and ${c.protein} g prote
 $('macros').innerHTML=[[fmt(c.kcal)+' kcal','Calories per day'],[c.protein+' g','Protein · '+(c.protein/c.w).toFixed(1)+' g per kg'],[c.carb+' g','Carbohydrates'],[c.fatG+' g','Fat'],['3–4 L','Water']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
 $('meals').innerHTML=p.meals.map(([n,items])=>{const k=items.reduce((t,x)=>t+F[x.k][2]*per(x.k,x.q),0),pr=items.reduce((t,x)=>t+F[x.k][3]*per(x.k,x.q),0);
 return `<div class="card meal"><h3>${n}<small>${fmt(k)} kcal · ${Math.round(pr)} g protein</small></h3><table>${items.map(x=>`<tr><td>${F[x.k][0]}</td><td>${qty(x.k,x.q)}</td></tr>`).join('')}</table></div>`}).join('');
+const gap=(a,t,u)=>{const d=a-t,ok=Math.abs(d)<=t*.08;return `<td class="${ok?'ok':'lo'}">${d>0?'+':''}${fmt(d)}${u}</td>`};
+const items={};p.meals.forEach(([,it])=>it.forEach(x=>{items[x.k]=(items[x.k]||0)+x.q}));
+const mq=(k,q)=>{const u=F[k][1],m=q*30;return u==='g'?(m>=1000?(m/1000).toFixed(1)+' kg':m+' g'):u==='ml'?(m>=1000?(m/1000).toFixed(1)+' L':m+' ml'):`${m} ${F[k][8][1]}`};
+const shop=Object.entries(items).map(([k,q])=>({k,q,cost:F[k][6]*per(k,q)*30})).sort((a,b)=>b.cost-a.cost);
+$('totals').innerHTML=`<div class="card"><h3>Daily total vs your target</h3><table class="tt"><thead><tr><th>Per day</th><th>Target</th><th>This plan</th><th>Gap</th></tr></thead><tbody>
+<tr><td>Calories</td><td>${fmt(c.kcal)}</td><td>${fmt(p.k)}</td>${gap(p.k,c.kcal,'')}</tr>
+<tr><td>Protein</td><td>${c.protein} g</td><td>${Math.round(p.p)} g</td>${gap(p.p,c.protein,' g')}</tr>
+<tr><td>Carbohydrates</td><td>${c.carb} g</td><td>${Math.round(p.c)} g</td>${gap(p.c,c.carb,' g')}</tr>
+<tr><td>Fat</td><td>${c.fatG} g</td><td>${Math.round(p.f)} g</td>${gap(p.f,c.fatG,' g')}</tr>
+<tr class="sum"><td>Food cost</td><td>₹${fmt(p.cap)}/mo max</td><td>₹${fmt(p.cost)}/day</td><td>₹${fmt(p.cost*30)}/mo</td></tr></tbody></table><p class="note" style="margin-top:8px">Green: within 8% of target. Amber: further off; see the note below the cost bar.</p></div>
+<div class="card"><h3>Monthly shopping list</h3><table class="tt"><thead><tr><th>Food</th><th>Per day</th><th>Per month</th><th>Cost/month</th></tr></thead><tbody>${shop.map(x=>`<tr><td>${F[x.k][0]}</td><td>${qty(x.k,x.q)}</td><td>${mq(x.k,x.q)}</td><td>₹${fmt(x.cost)}</td></tr>`).join('')}<tr class="sum"><td>Total</td><td></td><td></td><td>₹${fmt(p.cost*30)}</td></tr></tbody></table></div>`;
 const band={low:'₹1k–3k plan: dal, soya, eggs, seasonal produce',mid:'₹3k–5k plan: adds paneer, chicken, fish',high:'₹5k–7k plan: adds whey, tofu, nuts'}[S.bud];
 $('cost').innerHTML=`<div><b>₹${fmt(p.cost)}</b> <span>per day</span></div><div><b>₹${fmt(p.cost*30)}</b> <span>per month (approx.)</span></div><div><span>${band} · totals ${fmt(p.k)} kcal, ${Math.round(p.p)} g protein</span></div>`;
 const short=c.protein-p.p,over=p.cost*30>p.cap;
