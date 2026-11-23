@@ -4,22 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Body Check Planner</title>
+<meta name="description" content="Free body check: body-fat %, health risks, a weekly workout plan and an Indian diet plan for your budget – in one minute. Hindi and English.">
+<meta property="og:title" content="Body Check Planner – free body fat, workout and Indian diet plan">
+<meta property="og:description" content="Enter height, weight, age and gender. Get your body-fat %, health risks, a workout plan and an Indian diet plan for your budget.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1c2785">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c2785'/%3E%3Ccircle cx='32' cy='17' r='7' fill='%23ff6b2c'/%3E%3Cpath d='M20 54c0-14 4-26 12-26s12 12 12 26' fill='%23ff6b2c'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Noto+Sans+Devanagari:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE everyday health tool: clear, direct, a little clinical
-   IDEA the printed body-composition report a gym scanner hands you, made live
-   PICTURE a body silhouette drawn from your body-fat %, plus a ladder of figures at every 5% step
+   IDEA the printed body-composition report a gym scanner hands you, made live – and a coach that checks in weekly
    COLOUR indigo band, white ground, orange accent for "you", amber/red for risk
-   TYPE Archivo 800 display + Archivo text
-   LAYOUT laptop: inputs left, live result right; phone: title, figure, inputs, then sections */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0d1020);--ink:light-dark(#12142a,#eceeff);--mut:light-dark(#5a5f7d,#a3a8c8);--line:light-dark(#e2e4f0,#272c4d);--panel:light-dark(#f4f5fb,#151a33);--band:light-dark(#1c2785,#111857);--acc:#ff6b2c;--acc2:#ffb08a;--fig:light-dark(#2433a8,#8f9dff);--fig2:light-dark(#5866d6,#c3cbff);--lo:light-dark(#6b8fd6,#7c9be0);--md:#e9a23b;--hi:#e5484d}
+   TYPE Archivo 800 display + Archivo text (Noto Sans Devanagari for Hindi) */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0d1020);--ink:light-dark(#12142a,#eceeff);--mut:light-dark(#5a5f7d,#a3a8c8);--line:light-dark(#e2e4f0,#272c4d);--panel:light-dark(#f4f5fb,#151a33);--band:light-dark(#1c2785,#111857);--acc:#ff6b2c;--acc2:#ffb08a;--fig:light-dark(#2433a8,#8f9dff);--fig2:light-dark(#5866d6,#c3cbff);--lo:light-dark(#2f7d4a,#6fcf8f);--md:#e9a23b;--hi:#e5484d}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
-h1,h2,h3{font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:0;text-wrap:balance}
+html{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,"Noto Sans Devanagari",system-ui,sans-serif;overflow-x:clip}
+:lang(hi) body,html[lang=hi] body{font-family:"Noto Sans Devanagari",Archivo,system-ui,sans-serif}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;line-height:1.12;margin:0;text-wrap:balance}
 h1{font-size:clamp(32px,4.4vw,48px)}
 h2{font-size:clamp(26px,3vw,36px);margin-bottom:6px}
 h3{font-size:18px;letter-spacing:-.01em}
@@ -28,25 +34,37 @@ p{margin:0}
 .band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
 .top{background:var(--band);color:#fff}
 .top .lede{color:#c9cff8;margin-top:8px;max-width:60ch}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;color:#c9cff8;font-size:14px}
+.brand img{width:40px;height:40px;border-radius:10px;object-fit:cover;background:#fff}
+.tbtn{display:inline-flex;gap:6px;align-items:center;font:600 14px inherit;font-family:inherit;min-height:40px;padding:6px 12px;border-radius:10px;border:1.5px solid #ffffff44;background:transparent;color:#fff;cursor:pointer;text-decoration:none}
+.tbtn:hover{border-color:#fff}
+.tbtn[aria-pressed=true]{background:#fff;color:var(--band)}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-areas:"form res";gap:28px;margin-top:26px;align-items:stretch}
 .form{grid-area:form;background:var(--bg);color:var(--ink);border-radius:16px;padding:22px;display:grid;gap:16px;align-content:start}
 .res{grid-area:res;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);gap:18px;align-items:center}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
-label{display:grid;gap:5px;font-size:14px;font-weight:600;color:var(--mut)}
-input,select{font:500 16px Archivo,system-ui,sans-serif;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
-input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+label,.lab{display:grid;gap:5px;font-size:14px;font-weight:600;color:var(--mut)}
+input,select{font:500 16px Archivo,"Noto Sans Devanagari",system-ui,sans-serif;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+.pair{display:flex;gap:6px;align-items:center}
+.pair em{font-style:normal;font-size:14px;color:var(--mut)}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
-.seg button{flex:1 1 auto;font:600 15px Archivo,sans-serif;min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.seg button{flex:1 1 auto;font:600 15px Archivo,"Noto Sans Devanagari",sans-serif;min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--fig);border-color:var(--fig);color:var(--bg)}
 .seg button:hover{border-color:var(--fig2)}
+.seg button:disabled{opacity:.35;cursor:not-allowed}
 details{border-top:1px solid var(--line);padding-top:12px}
 summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px 14px;margin-top:10px}
+.checks label{display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink);font-size:15px;min-height:36px}
+.checks input{width:20px;min-height:20px;height:20px;accent-color:var(--fig)}
 .note{font-size:13px;color:var(--mut)}
 .top .note{color:#aeb6ec}
 .figbox{position:relative;height:clamp(320px,40vw,430px)}
 .figbox svg{position:absolute;inset:0;width:100%;height:100%}
 .big{font-size:clamp(64px,8vw,96px);font-weight:800;line-height:.95;letter-spacing:-.04em;white-space:nowrap}
-.big small{font-size:.38em;letter-spacing:0;margin-left:4px}
+.big small{display:block;font-size:.34em;letter-spacing:0;margin-top:6px;white-space:normal}
 .chip{display:inline-block;background:var(--acc);color:#1a0d05;font-weight:800;border-radius:999px;padding:4px 12px;font-size:15px;margin:10px 0 4px}
 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;margin-top:18px;border-top:1px solid #ffffff33;padding-top:16px}
 .stats b{display:block;font-size:24px;font-weight:800;white-space:nowrap}
@@ -58,6 +76,10 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 .summary strong{color:var(--fig)}
 .kv{display:grid;grid-template-columns:auto auto;justify-content:space-between;gap:8px 16px;margin-top:18px;padding:16px;background:var(--panel);border-radius:12px;font-size:15px}
 .kv b{text-align:right;white-space:nowrap}
+.alert{margin-top:16px;padding:14px 16px;border-radius:12px;border-left:5px solid var(--hi);background:color-mix(in srgb,var(--hi) 9%,var(--bg));font-size:15px}
+.alert.am{border-color:var(--md);background:color-mix(in srgb,var(--md) 10%,var(--bg))}
+.alert b{display:block;margin-bottom:2px}
+.alert ul{margin:6px 0 0;padding-left:20px}
 .risk{display:grid;grid-template-columns:minmax(0,1fr) 110px 82px;gap:6px 14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .risk h3{font-size:16px}
 .risk p{font-size:14px;color:var(--mut);grid-column:1/-1;margin-top:-2px}
@@ -86,7 +108,8 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 .card{background:var(--panel);border-radius:14px;padding:16px 18px}
 .card ol,.card ul{margin:10px 0 0;padding-left:20px;font-size:15px}
 .card li{margin:3px 0}
-.card li span{color:var(--mut);white-space:nowrap}
+.card li span{color:var(--mut)}
+.card li small{display:block;color:var(--mut);font-size:13px}
 .cardio{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
 .ctrls{display:flex;flex-wrap:wrap;gap:18px 28px;margin-top:18px}
 .ctrls>div{display:grid;gap:6px;flex:1 1 260px}
@@ -96,11 +119,15 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 .macros b{font-size:28px;font-weight:800;display:block;white-space:nowrap}
 .macros span{font-size:14px;color:var(--mut)}
 .meals{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:22px}
-.meal h3{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.meal h3{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
 .meal h3 small{font-size:13px;color:var(--mut);font-weight:600;white-space:nowrap}
 .meal table{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px}
-.meal td{padding:5px 0;border-bottom:1px solid var(--line)}
-.meal td:last-child{text-align:right;white-space:nowrap;font-weight:600;padding-left:10px}
+.meal td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.meal td.q{text-align:right;white-space:nowrap;font-weight:600;padding-left:10px}
+.meal td.s{width:34px;text-align:right}
+.swap{font:600 14px inherit;font-family:inherit;width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--fig);cursor:pointer;line-height:1}
+.swap:hover{border-color:var(--fig)}
+.linkbtn{font:600 14px inherit;font-family:inherit;background:none;border:0;color:var(--fig);cursor:pointer;padding:4px 0;text-decoration:underline}
 .cost{display:flex;flex-wrap:wrap;gap:12px 32px;align-items:baseline;margin-top:20px;padding:16px 20px;background:var(--band);color:#fff;border-radius:14px}
 .cost b{font-size:28px;font-weight:800;white-space:nowrap}
 .cost span{color:#c9cff8;font-size:14px}
@@ -114,27 +141,62 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 .tt td:first-child{white-space:normal}
 .tt tr.sum td{font-weight:800;border-bottom:0;border-top:1.5px solid var(--ink)}
 .ok{color:var(--lo)}.lo{color:var(--md)}
-@media(max-width:860px){.tots{grid-template-columns:minmax(0,1fr)}}
 .pr{display:grid;grid-template-columns:5.5em minmax(0,1fr) auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
 .pr i{display:block;height:12px;border-radius:6px;background:var(--fig)}
 .pr.t i{background:var(--acc)}
 .pr b{white-space:nowrap}
 .set{list-style:none;padding:0!important}
 .set li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:5px 0!important;margin:0!important}
-.set li b{white-space:nowrap}
+.set li b{text-align:right}
 .burn{margin-top:10px;font-size:15px}
 .burn b{font-size:22px;font-weight:800;color:var(--acc)}
 .pbtn small{display:block;font-size:11px;font-weight:600;opacity:.8}
-@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"res" "form"}.two{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:520px){.res{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.figbox{height:300px}.big{font-size:56px}.stats b{font-size:20px}.risk{grid-template-columns:minmax(0,1fr) 70px 74px}}
+.logform{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end;margin-top:14px}
+.btn{font:700 15px Archivo,"Noto Sans Devanagari",sans-serif;min-height:44px;padding:10px 16px;border-radius:10px;border:0;background:var(--fig);color:var(--bg);cursor:pointer}
+.btn.acc{background:var(--acc);color:#1a0d05}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.chart{width:100%;height:auto;display:block;margin-top:10px;background:var(--panel);border-radius:12px}
+.adapt{margin-top:14px;padding:16px;border-radius:12px;border:1.5px solid var(--fig);background:color-mix(in srgb,var(--fig) 6%,var(--bg))}
+.adapt .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cta{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between;padding:22px;border-radius:16px;background:var(--acc);color:#1a0d05}
+.cta h3{font-size:24px}
+.cta a{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:12px 18px;border-radius:12px;background:#1a0d05;color:#fff;font-weight:800;text-decoration:none}
+.share{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.share a,.share button{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:10px 16px;border-radius:10px;font:700 15px Archivo,"Noto Sans Devanagari",sans-serif;text-decoration:none;cursor:pointer;border:1.5px solid var(--line);background:var(--panel);color:var(--ink)}
+.share .wa{background:#25d366;border-color:#25d366;color:#06240f}
+.hidden{display:none!important}
+@media(min-width:861px){.res{align-self:start;position:sticky;top:16px}}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"res" "form"}.two{grid-template-columns:minmax(0,1fr)}.tots{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.res{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.figbox{height:300px}.big{font-size:56px}.stats b{font-size:18px;white-space:normal}.risk{grid-template-columns:minmax(0,1fr) 70px 74px}.big{white-space:normal}.big small{display:block;margin:4px 0 0}.tt{font-size:13px}.tt td,.tt th{white-space:normal;padding-left:6px}.card{padding:14px 12px}}
 @media(prefers-reduced-motion:no-preference){.figbox svg path,.figbox svg circle{transition:d .5s ease,r .5s ease}}
+@media print{
+  :root{color-scheme:light}
+  body{background:#fff;color:#000;font-size:12px}
+  .form,.toolbar .tbtn,.share,.ctrls,.swap,.linkbtn,.logform,.adapt .btns,#coachBox,.noprint,.map{display:none!important}
+  .top{background:#fff;color:#000;border-bottom:3px solid #1c2785}
+  .top .lede,.stats span,.brand{color:#333}
+  .grid{grid-template-columns:1fr;margin-top:8px}
+  .band{padding:14px 10px;break-inside:avoid-page}
+  .sec{break-before:auto}
+  .cost{background:#eee;color:#000}.cost span{color:#333}
+  .card,.kv,.figs div{background:#f4f4f4}
+  a{color:#000}
+}
 </style>
 </head>
 <body>
 <header class="band top">
 <div class="wrap">
-<h1>Body Check Planner</h1>
-<p class="lede">Enter your height, weight, age and gender. You get your body-fat estimate, health risks to watch, a body-fat map, a weekly workout plan and an Indian diet plan for your budget.</p>
+<div class="toolbar">
+  <div class="brand" id="brand"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button type="button" class="tbtn" id="langEn" aria-pressed="true">English</button>
+    <button type="button" class="tbtn" id="langHi" aria-pressed="false">हिंदी</button>
+    <button type="button" class="tbtn" id="printBtn" data-i="print">Download PDF</button>
+  </div>
+</div>
+<h1 data-i="title">Body Check Planner</h1>
+<p class="lede" data-i="lede">Enter your height, weight, age and gender. You get your body-fat estimate, health risks to watch, a body-fat map, a weekly workout plan and an Indian diet plan for your budget.</p>
 <div class="grid">
 <div class="res" aria-live="polite">
 <div class="figbox" id="heroFig"></div>
@@ -146,44 +208,68 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 </div>
 </div>
 <form class="form" id="f" autocomplete="off">
-<div><label>Gender</label><div class="seg" id="sexSeg" role="group" aria-label="Gender"><button type="button" data-v="m">Male</button><button type="button" data-v="f">Female</button></div></div>
 <div class="row">
-<label for="age">Age (years)<input id="age" type="number" inputmode="numeric" min="16" max="85" value="30"></label>
-<label for="ht">Height (cm) <span id="ftTxt" class="note"></span><input id="ht" type="number" inputmode="decimal" min="130" max="220" value="172"></label>
-<label for="wt">Weight (kg)<input id="wt" type="number" inputmode="decimal" min="35" max="220" value="82"></label>
+<div class="lab"><span data-i="gender">Gender</span><div class="seg" id="sexSeg" role="group"><button type="button" data-v="m" data-i="male">Male</button><button type="button" data-v="f" data-i="female">Female</button></div></div>
+<div class="lab"><span data-i="units">Units</span><div class="seg" id="unitSeg" role="group"><button type="button" data-v="metric">cm · kg</button><button type="button" data-v="imperial">ft · lb</button></div></div>
 </div>
 <div class="row">
-<label for="act">Daily activity<select id="act"><option value="1.2">Desk job, little walking</option><option value="1.375">Light: on feet some of the day</option><option value="1.55">Moderate: active job or sport</option><option value="1.725">Very active: physical work</option></select></label>
-<label for="goal">Goal<select id="goal"><option value="auto">Let the system decide</option><option value="lose">Lose fat</option><option value="keep">Maintain / tone up</option><option value="gain">Build muscle</option></select></label>
+<label for="age"><span data-i="age">Age (years)</span><input id="age" type="number" inputmode="numeric" min="16" max="85" value="30"></label>
+<label for="ht"><span><span data-i="height">Height</span> <span id="ftTxt" class="note"></span></span>
+<span class="pair" id="htM"><input id="ht" type="number" inputmode="decimal" min="130" max="220" value="172"><em>cm</em></span>
+<span class="pair hidden" id="htI"><input id="htFt" type="number" inputmode="numeric" min="4" max="7" value="5" aria-label="feet"><em>ft</em><input id="htIn" type="number" inputmode="numeric" min="0" max="11" value="8" aria-label="inches"><em>in</em></span></label>
+<label for="wt"><span data-i="weight">Weight</span><span class="pair"><input id="wt" type="number" inputmode="decimal" min="35" max="480" value="82"><em id="wU">kg</em></span></label>
 </div>
-<div id="paceBox"><label>Weight-loss pace (per week)</label><div class="seg" id="paceSeg" role="group" aria-label="Weight-loss pace"><button type="button" data-v="0.25">0.25 kg</button><button type="button" data-v="0.5">0.5 kg</button><button type="button" data-v="0.75">0.75 kg</button><button type="button" data-v="1">1 kg</button></div><p class="note" id="paceNote" style="margin-top:6px"></p></div>
-<div><label>Where can you train?</label><div class="seg" id="placeSeg" role="group" aria-label="Training place"><button type="button" data-v="gym">Gym</button><button type="button" data-v="home">Home / walking only</button></div></div>
-<label for="exp">Training experience<select id="exp"><option value="0">Beginner (under 6 months)</option><option value="1">Some (6 months to 2 years)</option><option value="2">Experienced (2+ years)</option></select></label>
-<details id="tape"><summary>Add tape measurements for a more accurate body fat %</summary>
-<div class="row" style="margin-top:10px">
-<label for="waist">Waist at navel (cm)<input id="waist" type="number" inputmode="decimal" placeholder="optional"></label>
-<label for="neck">Neck (cm)<input id="neck" type="number" inputmode="decimal" placeholder="optional"></label>
-<label for="hip" id="hipL">Hips, widest (cm)<input id="hip" type="number" inputmode="decimal" placeholder="women only"></label>
+<div class="row">
+<label for="act"><span data-i="activity">Daily activity</span><select id="act"><option value="1.2" data-i="act1">Desk job, little walking</option><option value="1.375" data-i="act2">Light: on feet some of the day</option><option value="1.55" data-i="act3">Moderate: active job or sport</option><option value="1.725" data-i="act4">Very active: physical work</option></select></label>
+<label for="goal"><span data-i="goal">Goal</span><select id="goal"><option value="auto" data-i="gAuto">Let the system decide</option><option value="lose" data-i="gLose">Lose fat</option><option value="keep" data-i="gKeep">Maintain / tone up</option><option value="gain" data-i="gGain">Build muscle</option></select></label>
 </div>
-<p class="note" style="margin-top:8px">With waist and neck (plus hips for women) the tool uses the US Navy tape method, usually within 3 to 4%. Without them it estimates from BMI and age, which can be off by 5% or more for muscular or very lean people.</p>
+<div id="paceBox"><span class="lab" data-i="pace">Weight-loss pace (per week)</span><div class="seg" id="paceSeg" role="group" style="margin-top:5px"><button type="button" data-v="0.25">0.25</button><button type="button" data-v="0.5">0.5</button><button type="button" data-v="0.75">0.75</button><button type="button" data-v="1">1</button></div><p class="note" id="paceNote" style="margin-top:6px"></p></div>
+<div class="lab"><span data-i="where">Where can you train?</span><div class="seg" id="placeSeg" role="group"><button type="button" data-v="gym" data-i="gym">Gym</button><button type="button" data-v="equip" data-i="equip">Home: dumbbells / bands</button><button type="button" data-v="home" data-i="homeBw">Home: no equipment</button></div></div>
+<label for="exp"><span data-i="exp">Training experience</span><select id="exp"><option value="0" data-i="exp0">Beginner (under 6 months)</option><option value="1" data-i="exp1">Some (6 months to 2 years)</option><option value="2" data-i="exp2">Experienced (2+ years)</option></select></label>
+<details id="health" open><summary data-i="healthQ">Any of these? (important for a safe plan)</summary>
+<div class="checks" id="conds"></div>
 </details>
-<p class="note">Sample values filled in; change them and everything below updates. Inputs stay saved in this browser.</p>
+<details id="tape" open><summary data-i="tapeQ">Tape measurements for a more accurate body fat % (recommended)</summary>
+<div class="row" style="margin-top:10px">
+<label for="waist"><span data-i="waist">Waist at navel (cm)</span><input id="waist" type="number" inputmode="decimal" placeholder="cm"></label>
+<label for="neck"><span data-i="neck">Neck (cm)</span><input id="neck" type="number" inputmode="decimal" placeholder="cm"></label>
+<label for="hip" id="hipL"><span data-i="hip">Hips, widest (cm)</span><input id="hip" type="number" inputmode="decimal" placeholder="cm"></label>
+</div>
+<p class="note" style="margin-top:8px" data-i="tapeNote">With waist and neck (plus hips for women) the tool uses the US Navy tape method, usually within 3 to 4%. Without them it estimates from BMI and age, which can be off by 5% or more for muscular or very lean people.</p>
+</details>
+<p class="note" data-i="saved">Sample values filled in; change them and everything below updates. Inputs stay saved in this browser only.</p>
 </form>
 </div>
 </div>
 </header>
 
 <section class="band sec"><div class="wrap">
-<h2 id="condTitle">Your body's current condition</h2>
+<h2 data-i="condTitle">Your body's current condition</h2>
+<div id="alerts"></div>
 <div class="two">
-<div><p class="summary" id="summary"></p><div class="kv" id="kv"></div><h3 style="font-size:22px;margin-top:24px">Projection</h3><p class="note" id="projNote" style="margin:4px 0 8px"></p><div id="proj"></div></div>
-<div><h3 style="font-size:22px">If nothing changes: health risks to watch</h3><p class="note" style="margin:4px 0 8px">Risk levels from body fat, BMI (Asian cut-offs), waist and age. These are odds, not a diagnosis; a blood test (sugar, HbA1c, lipids, liver) tells you where you really stand.</p><div id="risks"></div></div>
+<div><p class="summary" id="summary"></p><div class="kv" id="kv"></div><h3 style="font-size:22px;margin-top:24px" data-i="projection">Projection</h3><p class="note" id="projNote" style="margin:4px 0 8px"></p><div id="proj"></div></div>
+<div><h3 style="font-size:22px" data-i="risksTitle">If nothing changes: health risks to watch</h3><p class="note" style="margin:4px 0 8px" data-i="risksNote">Risk levels from body fat, BMI (Asian cut-offs), waist and age. These are odds, not a diagnosis; a blood test (sugar, HbA1c, lipids, liver) tells you where you really stand.</p><div id="risks"></div></div>
+</div>
+</div></section>
+
+<section class="band sec" id="progressSec"><div class="wrap">
+<h2 data-i="progTitle">Track your progress</h2>
+<p class="sub" data-i="progSub">Weigh yourself in the morning, 3 times a week, and log it here (saved in this browser). After 2 weeks the plan checks your real progress and adjusts your calories, like a coach would.</p>
+<div class="logform">
+<label for="logDate"><span data-i="date">Date</span><input id="logDate" type="date"></label>
+<label for="logW"><span id="logWL">Weight (kg)</span><input id="logW" type="number" inputmode="decimal" step="0.1"></label>
+<label for="logWaist"><span data-i="waistOpt">Waist (cm, optional)</span><input id="logWaist" type="number" inputmode="decimal" step="0.5"></label>
+<button type="button" class="btn" id="logAdd" data-i="addEntry">Add entry</button>
+</div>
+<div class="two" style="margin-top:14px">
+<div><div id="chart"></div><div id="adapt"></div></div>
+<div><div id="logList"></div></div>
 </div>
 </div></section>
 
 <section class="band sec"><div class="wrap">
-<h2>Your body-fat map</h2>
-<p class="sub">How your body would roughly look at every 5% step, keeping your current muscle. Weight changes and time assume about 0.5 kg fat loss or 0.25 kg gain per week.</p>
+<h2 data-i="mapTitle">Your body-fat map</h2>
+<p class="sub" data-i="mapSub">How your body would roughly look at every 5% step, keeping your current muscle. Weight changes and time assume about 0.5 kg fat loss or 0.25 kg gain per week.</p>
 <div class="map" id="map"></div>
 </div></section>
 
@@ -192,41 +278,234 @@ summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px}
 <p class="sub" id="woSub"></p>
 <div class="figs" id="woFigs"></div>
 <div class="two">
-<div><h3 style="font-size:22px;margin-bottom:6px">Your week</h3><ul class="week" id="week"></ul></div>
+<div><h3 style="font-size:22px;margin-bottom:6px" data-i="yourWeek">Your week</h3><ul class="week" id="week"></ul><div id="fewer"></div></div>
 <div><h3 style="font-size:22px" id="cardioH">Cardio</h3><div class="cardio" id="cardio"></div></div>
 </div>
 <div class="sess" id="sess"></div>
 </div></section>
 
 <section class="band sec"><div class="wrap">
-<h2>Diet plan</h2>
+<h2 data-i="dietTitle">Diet plan</h2>
 <p class="sub" id="dietSub"></p>
 <div class="ctrls">
-<div><label>Food type</label><div class="seg" id="dietSeg" role="group" aria-label="Food type"><button type="button" data-v="veg">Vegetarian</button><button type="button" data-v="egg">Veg + eggs</button><button type="button" data-v="non">Non-veg</button></div></div>
-<div><label>Monthly food budget</label><div class="seg" id="budSeg" role="group" aria-label="Budget"><button type="button" data-v="low">₹1k–3k</button><button type="button" data-v="mid">₹3k–5k</button><button type="button" data-v="high">₹5k–7k</button></div></div>
+<div><span class="lab" data-i="foodType">Food type</span><div class="seg" id="dietSeg" role="group"><button type="button" data-v="veg" data-i="veg">Vegetarian</button><button type="button" data-v="egg" data-i="eggT">Veg + eggs</button><button type="button" data-v="non" data-i="non">Non-veg</button></div></div>
+<div><span class="lab" data-i="budget">Monthly food budget</span><div class="seg" id="budSeg" role="group"><button type="button" data-v="low">₹1k–3k</button><button type="button" data-v="mid">₹3k–5k</button><button type="button" data-v="high">₹5k–7k</button></div></div>
+<div><span class="lab" data-i="cuisine">Food style</span><div class="seg" id="cuisSeg" role="group"><button type="button" data-v="north" data-i="north">North (roti)</button><button type="button" data-v="south" data-i="south">South (rice, idli)</button><button type="button" data-v="west" data-i="west">West (rotli, bhakri)</button><button type="button" data-v="east" data-i="east">East (rice)</button></div></div>
+<div><span class="lab" data-i="restr">Food rules</span><div class="seg" id="restrSeg" role="group"><button type="button" data-v="none" data-i="rNone">None</button><button type="button" data-v="jain" data-i="rJain">Jain</button><button type="button" data-v="dairyfree" data-i="rDairy">No dairy</button></div></div>
+<div><span class="lab" data-i="mealPat">Meals</span><div class="seg" id="patSeg" role="group"><button type="button" data-v="std" data-i="pStd">3 meals + snack</button><button type="button" data-v="two" data-i="pTwo">2 meals</button><button type="button" data-v="night" data-i="pNight">Night shift</button></div></div>
+<div><span class="lab" data-i="fasting">Fasting</span><div class="seg" id="fastSeg" role="group"><button type="button" data-v="none" data-i="fNone">None</button><button type="button" data-v="vrat" data-i="fVrat">Vrat days (Navratri, Ekadashi)</button><button type="button" data-v="ramadan" data-i="fRam">Ramadan</button></div></div>
 </div>
 <div class="macros" id="macros"></div>
+<p class="note" style="margin-top:14px"><span data-i="swapHint">Tap ⇄ next to a food to swap it for another with the same protein (or calories). </span><button type="button" class="linkbtn" id="resetSwaps" data-i="resetSwaps">Reset swaps</button></p>
 <div class="meals" id="meals"></div>
+<div id="vratPlan"></div>
 <div class="tots" id="totals"></div>
 <div class="cost" id="cost"></div>
 <div id="dietWarn"></div>
 <div class="sess" id="eat"></div>
 </div></section>
 
+<section class="band sec"><div class="wrap">
+<h2 data-i="labTitle">Blood tests and supplements</h2>
+<p class="sub" data-i="labSub">Most Indians are low in vitamin D, and many (especially vegetarians) in B12. Test first, then supplement only what a doctor confirms.</p>
+<div class="sess" id="labs"></div>
+</div></section>
+
+<section class="band sec noprint" id="shareSec"><div class="wrap">
+<div id="ctaBox"></div>
+<h2 style="margin-top:22px" data-i="shareTitle">Save or share your plan</h2>
+<div class="share">
+<button type="button" id="printBtn2" data-i="print">Download PDF</button>
+<a id="waShare" class="wa" target="_blank" rel="noopener" data-i="waShare">Share on WhatsApp</a>
+<button type="button" id="copyLink" data-i="copyLink">Copy link</button>
+</div>
+<details id="coachBox" style="margin-top:22px"><summary data-i="coachQ">For gyms and coaches: put your name and WhatsApp on this tool</summary>
+<div class="row" style="margin-top:12px">
+<label for="cName"><span data-i="cName">Gym / coach name</span><input id="cName" type="text" placeholder="FitZone Gym"></label>
+<label for="cWa"><span data-i="cWa">WhatsApp number (with country code)</span><input id="cWa" type="tel" inputmode="tel" placeholder="919876543210"></label>
+<label for="cLogo"><span data-i="cLogo">Logo (web address)</span><input id="cLogo" type="url" placeholder="https://…/logo.png"></label>
+<label for="cLogoFile"><span data-i="cLogoFile">…or upload a logo (this device only)</span><input id="cLogoFile" type="file" accept="image/*"></label>
+</div>
+<div class="share">
+<button type="button" id="makeLink" class="btn" data-i="makeLink">Create my branded link</button>
+<button type="button" id="clearCoach" class="btn ghost" data-i="clearCoach">Remove branding</button>
+</div>
+<p class="note" id="coachOut" style="margin-top:8px;word-break:break-all"></p>
+<p class="note" style="margin-top:6px" data-i="coachNote">Share the branded link on your Instagram bio or WhatsApp status. Everyone who opens it sees your name and a "Book a free consultation" button that opens a WhatsApp chat with you, with their numbers already in the message. Nothing is stored on any server.</p>
+</details>
+</div></section>
+
 <footer class="band"><div class="wrap foot">
-<p>Formulas used: Mifflin–St Jeor for calories, Deurenberg (BMI-based) or US Navy tape method for body fat, ACE body-fat categories, Asian BMI cut-offs, WHO activity guidance of 150 to 300 minutes of cardio a week. Food prices are approximate Indian retail prices for 2026 and vary by city. This is a planning aid, not medical advice; if you have a health condition, are pregnant, or are over 60 and new to exercise, check with a doctor first.</p>
+<p data-i="foot">Formulas used: Mifflin–St Jeor for calories, Deurenberg (BMI-based) or US Navy tape method for body fat, age-adjusted body-fat ranges, Asian BMI cut-offs, ACSM equations for cardio calories, WHO activity guidance of 150 to 300 minutes of cardio a week. Food prices are approximate Indian retail prices for 2026 and vary by city. This is a planning aid, not medical advice; if you have a health condition, are pregnant, or are over 60 and new to exercise, check with a doctor first.</p>
 </div></footer>
 
 <script>
+'use strict';
 {
 const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const r5=v=>Math.round(v/5)*5;
 const fmt=v=>Math.round(v).toLocaleString('en-IN');
-const S={sex:'m',place:'gym',diet:'veg',bud:'mid'};
-const fields=['age','ht','wt','act','goal','exp','waist','neck','hip'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const S={sex:'m',place:'gym',diet:'veg',bud:'mid',units:'metric',lang:'en',cuisine:'north',restr:'none',pat:'std',fast:'none',cond:[],swaps:{},kAdj:0,walkAdj:0,adjDate:''};
+const fields=['age','ht','htFt','htIn','wt','act','goal','exp','waist','neck','hip'];
+let LOG=[];let COACH={name:'',wa:'',logo:''};let URLCOACH=false;
 
-/* ---------- body silhouette ---------- */
+/* =================== text: English + Hindi =================== */
+const L={en:{
+title:'Body Check Planner',lede:'Enter your height, weight, age and gender. You get your body-fat estimate, health risks to watch, a body-fat map, a weekly workout plan and an Indian diet plan for your budget.',
+print:'Download PDF',gender:'Gender',male:'Male',female:'Female',units:'Units',age:'Age (years)',height:'Height',weight:'Weight',activity:'Daily activity',act1:'Desk job, little walking',act2:'Light: on feet some of the day',act3:'Moderate: active job or sport',act4:'Very active: physical work',goal:'Goal',gAuto:'Let the system decide',gLose:'Lose fat',gKeep:'Maintain / tone up',gGain:'Build muscle',pace:'Weight-loss pace (per week)',where:'Where can you train?',gym:'Gym',equip:'Home: dumbbells / bands',homeBw:'Home: no equipment',exp:'Training experience',exp0:'Beginner (under 6 months)',exp1:'Some (6 months to 2 years)',exp2:'Experienced (2+ years)',
+healthQ:'Any of these? (important for a safe plan)',tapeQ:'Tape measurements for a more accurate body fat % (recommended)',waist:'Waist at navel (cm)',neck:'Neck (cm)',hip:'Hips, widest (cm)',tapeNote:'With waist and neck (plus hips for women) the tool uses the US Navy tape method, usually within 3 to 4%. Without them it estimates from BMI and age, which can be off by 5% or more for muscular or very lean people.',saved:'Sample values filled in; change them and everything below updates. Inputs stay saved in this browser only.',
+condTitle:"Your body's current condition",projection:'Projection',risksTitle:'If nothing changes: health risks to watch',risksNote:'Risk levels from body fat, BMI (Asian cut-offs), waist and age. These are odds, not a diagnosis; a blood test (sugar, HbA1c, lipids, liver) tells you where you really stand.',
+progTitle:'Track your progress',progSub:'Weigh yourself in the morning, 3 times a week, and log it here (saved in this browser). After 2 weeks the plan checks your real progress and adjusts your calories, like a coach would.',date:'Date',waistOpt:'Waist (cm, optional)',addEntry:'Add entry',
+mapTitle:'Your body-fat map',mapSub:'How your body would roughly look at every 5% step, keeping your current muscle. Weight changes and time assume about 0.5 kg fat loss or 0.25 kg gain per week.',yourWeek:'Your week',dietTitle:'Diet plan',foodType:'Food type',veg:'Vegetarian',eggT:'Veg + eggs',non:'Non-veg',budget:'Monthly food budget',cuisine:'Food style',north:'North (roti)',south:'South (rice, idli)',west:'West (rotli, bhakri)',east:'East (rice)',restr:'Food rules',rNone:'None',rJain:'Jain',rDairy:'No dairy',mealPat:'Meals',pStd:'3 meals + snack',pTwo:'2 meals',pNight:'Night shift',fasting:'Fasting',fNone:'None',fVrat:'Vrat days (Navratri, Ekadashi)',fRam:'Ramadan',swapHint:'Tap ⇄ next to a food to swap it for another with the same protein (or calories). ',resetSwaps:'Reset swaps',
+labTitle:'Blood tests and supplements',labSub:'Most Indians are low in vitamin D, and many (especially vegetarians) in B12. Test first, then supplement only what a doctor confirms.',shareTitle:'Save or share your plan',waShare:'Share on WhatsApp',copyLink:'Copy link',copied:'Link copied ✓',coachQ:'For gyms and coaches: put your name and WhatsApp on this tool',cName:'Gym / coach name',cWa:'WhatsApp number (with country code)',cLogo:'Logo (web address)',cLogoFile:'…or upload a logo (this device only)',makeLink:'Create my branded link',clearCoach:'Remove branding',coachNote:'Share the branded link on your Instagram bio or WhatsApp status. Everyone who opens it sees your name and a "Book a free consultation" button that opens a WhatsApp chat with you, with their numbers already in the message. Nothing is stored on any server.',
+foot:'Formulas used: Mifflin–St Jeor for calories, Deurenberg (BMI-based) or US Navy tape method for body fat, age-adjusted body-fat ranges, Asian BMI cut-offs, ACSM equations for cardio calories, WHO activity guidance of 150 to 300 minutes of cardio a week. Food prices are approximate Indian retail prices for 2026 and vary by city. This is a planning aid, not medical advice; if you have a health condition, are pregnant, or are over 60 and new to exercise, check with a doctor first.',
+bodyFat:'% body fat',bmiM:'Estimated from BMI and age (Deurenberg). Add tape measurements for better accuracy.',navyM:'US Navy tape method (waist and neck).',navyF:'US Navy tape method (waist, hips and neck).',
+cat:{Underfat:'Underfat','Lean and healthy':'Lean and healthy',Healthy:'Healthy','High end of healthy':'High end of healthy',Overweight:'Overweight','Obese range':'Obese range'},
+bmi:{Underweight:'Underweight',Normal:'Normal',Overweight:'Overweight','Obese (class I)':'Obese (class I)','Obese (class II)':'Obese (class II)'},
+fatMass:'Fat mass',lean:'Lean mass (muscle, bone, water)',eat:g=>'Eat per day '+{lose:'to lose fat',keep:'to maintain',gain:'to build muscle'}[g],
+sum1:(bf,cat,who)=>`At <strong>${bf}% body fat</strong> you are in the <strong>${cat}</strong> group for ${who}. `,whoM:(a,b)=>`men your age (healthy: ${a}–${b}%)`,whoF:(a,b)=>`women your age (healthy: ${a}–${b}%)`,
+sumLose:(t,d,tw,p,wk)=>`A healthy target is about ${t}%, which means losing roughly <strong>${d} of fat</strong> (to about ${tw}) while keeping your muscle. At ${p} a week that takes around ${wk} weeks.`,
+sumGain:r=>`You have little fat to spare. The priority is gaining muscle with a small calorie surplus: aim for about ${r} a week.`,sumKeep:'You are in a healthy range. The aim now is to keep fat steady while building strength and fitness.',
+sumAuto:g=>` The system picked <strong>${{lose:'fat loss',keep:'maintain and tone',gain:'muscle gain'}[g]}</strong> as your goal.`,
+kvBmi:'BMI (Asian cut-offs)',kvWhtr:'Waist-to-height ratio',kvWhtrAdd:'add waist above',high:'high',raised:'raised',healthy:'healthy',kvBmr:'Calories burned at rest (BMR)',kvTdee:'Calories burned per day (no exercise)',kvEx:'Extra burned by cardio (above resting)',kvFood:'Daily food target',kvDef:'Deficit from food + cardio',kvPace:'Expected pace',perDay:'/day avg',
+rateLose:p=>p+'/week loss',rateGain:r=>'≈'+r+'/week gain',steady:'steady',today:'Today',week:'Week',
+projLose:p=>`At ${p} a week, assuming you lift and hit your protein so most of the loss is fat. Weeks 1–2 often drop faster (water); later weeks slow a little.`,projGain:'Slow lean gain of about 0.25 kg a week; about half of it muscle for a beginner.',projKeep:'Weight stays steady while body fat drifts down with training.',
+lvl:{Low:'Low',Moderate:'Moderate',High:'High'},
+paceNoLose:'Pace applies when the goal is fat loss.',paceFast:(l,s)=>`<b>Fast:</b> more than 1% of your body weight a week (${l}). Expect hunger and some muscle loss; ${s} is the suggested pace. `,paceCap:s=>`<b>Capped at ${s}</b> because of the health condition you ticked. `,
+paceWalk:(fl,m)=>`Food can't safely go below ${fl} kcal, so this pace also needs <b>${m} min of extra brisk walking a day</b>.`,paceWalkHard:' That is hard to keep up; a slower pace will likely get you there sooner overall.',paceEat:k=>`Eat ${k} kcal a day; cardio covers the rest of the deficit.`,suggested:'suggested',
+youNow:'You now',weeksT:w=>'~'+w+' weeks',slip:'if habits slip',current:'Current',healthyRange:'Healthy range',
+woTitleGym:d=>`Workout plan: ${d} gym days a week`,woTitleHome:d=>`Workout plan: ${d} home strength days a week`,
+woSub:(lv,pace,h,d,m,cd,pm,low,walk)=>`Based on your ${lv} level, age, health and goal${pace?`, and a pace of ${pace} a week`:''}, you need about ${h} hours a week: ${d} strength sessions of ${m} min and ${cd} cardio session${cd>1?'s':''} of ${pm} min. Fewer days slows results; more adds fatigue before it adds results. Cardio is ${low?'kept low-impact to protect your joints and heart':'a mix of incline walking, cross trainer and intervals'}.${walk?` Plus ${walk} min of extra brisk walking a day to hold your pace.`:''}`,
+lvls:['beginner','intermediate','experienced'],figHrs:'Exercise time per week',figStr:m=>'Strength training · '+m+' min each',figDays:'days',figCardio:'Cardio per week',figBurn:'Burned by cardio per week',figSteps:'Steps per day',
+rest:'Rest: easy walk, stretching',kSteps:'k steps',days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+fewerT:d=>`Can't manage ${d} days?`,fewerSub:'The plan stays the same – this is what fewer days would cost you:',fewerRow:(d,m,m0,x)=>`<b>${d} days:</b> each cardio session grows from ${m0} to ${m} min to keep the same fat loss, and you do ${x}% less strength work – more of the weight lost comes from muscle, so you end up softer at the same weight`,fewerRowK:(d,x)=>`<b>${d} days:</b> about ${x}% less training – slower strength and shape changes`,fewerNow:(p,w)=>`Recommended plan: ${p} a week → ~${w} weeks.`,
+cardioGym:'Gym cardio: machine settings',cardioHome:'Cardio at home or outdoors',warm:'Warm-up 5 min',main:m=>`Main ${m} min`,cool:'Cool-down 3 min',easy:'easy pace',inMin:(m)=>`in ${m} min`,per10:'kcal per 10 min',
+noGym:"Can't reach the gym?",noGymWalk:(m,n)=>`A brisk walk of <b>${m} min</b> at 5.5 km/h burns about the same as one ${n} session`,keepSteps:s=>`Keep your <b>${s} steps</b> a day either way`,calNote:w=>`Calories are for your weight (${w}), from ACSM equations; machine displays often read 10–20% high`,
+dailyWalk:'Daily walking',aimSteps:s=>`Aim for <b>${s} steps</b> a day in total`,mealWalk:'A 10-minute walk after each meal helps blood sugar',calNoteH:w=>`Calories are for your weight (${w}), from ACSM walking and running equations`,
+warmupG:'Warm-up: 5 min cross trainer, level 3, then 1 light set of the first exercise',warmupH:'Warm-up: 5 min brisk march and arm circles, then 1 light set of the first exercise',finisher:'Finisher',
+progT:'How to progress',prog:['Rest 60–90 s between sets (2 min on heavy lifts)','When you hit the top of the rep range on all sets, add 2.5 kg or a harder variation','Warm up 5 min first; stop 1–2 reps before failure','Sleep 7–8 hours: fat loss and muscle gain both stall without it'],
+dietSub:(k,p)=>`Built for ${k} kcal and ${p} g protein a day. Portions are scaled to hit your numbers.`,mCal:'Calories per day',mPro:x=>'Protein · '+x+' g per kg',mCarb:'Carbohydrates',mFat:'Fat',mWater:'Water',
+meals:{B:'Breakfast',L:'Lunch',SN:'Evening snack',D:'Dinner',O:'Cooking fat (whole day)',BR:'Brunch (late breakfast + lunch)',DS:'Dinner + snack',N1:'Meal 1 – after waking (~2 pm)',N2:'Meal 2 – before shift (~7 pm)',N3:'Meal 3 – on shift (~1 am)',N4:'Snack – end of shift (~6 am)',SE:'Sehri (before dawn)',IF:'Iftar (at sunset)',RD:'Dinner (after Isha)',RL:'Before sleep',VB:'Morning',VL:'Lunch',VS:'Evening',VD:'Night'},
+dayT:'Daily total vs your target',perDayH:'Per day',target:'Target',thisPlan:'This plan',gap:'Gap',kcal:'Calories',protein:'Protein',carbs:'Carbohydrates',fat:'Fat',foodCost:'Food cost',moMax:'/mo max',greenNote:'Green: within 8% of target. Amber: further off; see the note below the cost bar.',
+shopT:'Monthly shopping list',food:'Food',perMonth:'Per month',costMonth:'Cost/month',total:'Total',perDayL:'per day',perMonthL:'per month (approx.)',
+band:{low:'₹1k–3k plan: dal, soya, eggs, seasonal produce',mid:'₹3k–5k plan: adds paneer, chicken, fish',high:'₹5k–7k plan: adds whey, tofu, nuts'},totalsL:(k,p)=>`totals ${k} kcal, ${p} g protein`,
+overB:(c,cap)=>`Your calorie needs are high, so even the cheapest version of this plan costs about ₹${c} a month, a little above the ₹${cap} limit. Picking the next budget range, or more dal and soya in place of milk and eggs, brings it closer.`,
+shortP:(p,t,veg)=>`This plan reaches ${p} g of your ${t} g protein target without going over your calories. To close the gap, ${veg?'add 20–30 g more soya chunks or a scoop of protein powder; both give a lot of protein for few calories':'add egg whites, or swap paneer and dal for chicken or fish'}.`,
+roundK:(k,t)=>`Portions round to whole rotis and eggs, so this lands at ${k} kcal against your ${t} target. Drop or add one roti to adjust.`,
+eatMore:'Eat more of',cutDown:'Cut down on',rules:'Simple rules',
+moreVeg:['Dal, chana, rajma, soya at two meals a day','Paneer, tofu, curd, milk for protein','Sabzi and salad filling half the plate','Whole wheat, bajra, jowar rotis'],moreEgg:['2–4 eggs a day (boiled, bhurji, omelette)','Dal, chana and curd every day','Sabzi and salad filling half the plate','Whole grain rotis over maida'],moreNon:['Chicken breast, fish, eggs (grilled, curry, tandoori)','Dal and curd every day','Sabzi and salad filling half the plate','Rice in measured portions, not unlimited'],
+less:['Sugary chai: cut to 1 cup a day, less sugar','Fried snacks: samosa, farsan, bhajiya, namkeen','Sweets, cold drinks, packaged juice','Maida: bakery items, white bread, biscuits'],lessGain:'Skipping meals: eat every 3–4 hours',lessLate:'Late-night eating after dinner',
+rulesL:['Protein at every meal, about a palm-size portion','Weigh food for the first 2 weeks to learn portions','Weigh yourself 3 times a week in the morning and log it above','Re-run this tool every 4 weeks with your new weight'],
+jainNote:'Jain: no onion, garlic, potato or other root vegetables; sabzi and salad are chosen from above-ground vegetables.',dairyNote:'No dairy: soy milk, tofu and a plant protein replace milk, curd, paneer and whey. Choose calcium-fortified soy milk.',
+vratT:'Fasting-day (vrat) plan',vratSub:'Use this on Navratri, Ekadashi and other vrat days: same calories and protein, with vrat foods (no grains).',ramNote:'Ramadan: all meals between sunset and dawn. Drink 2.5–3 L of water across Iftar to Sehri; keep Sehri high in protein and fibre so the fast is easier.',
+labsT:'Tests to get (approx. lab prices)',labs:[['HbA1c + fasting sugar','₹300–600'],['Lipid profile','₹300–600'],['Thyroid (TSH)','₹250–500'],['Vitamin B12','₹500–900'],['Vitamin D (25-OH)','₹800–1,500'],['CBC (haemoglobin)','₹200–400'],['Liver (LFT)','₹400–700']],labsNote:'Full-body packages from big labs often cover all of these for ₹1,000–2,500 – cheaper than single tests. Repeat yearly, or every 3–6 months if something is high.',
+suppT:'Supplements to ask your doctor about',supp:['<b>Vitamin D3</b> – most Indians test low despite the sun','<b>Vitamin B12</b> – vegetarians almost always need it; many non-vegetarians too','<b>Iron + folic acid</b> – women with periods, if haemoglobin is low','<b>Omega-3</b> – optional if you eat little fish','<b>Creatine monohydrate 3–5 g a day</b> – optional, the best-studied supplement for strength training'],suppNote:'Food first: the diet plan above already covers protein. A supplement fixes a measured shortfall, not a guess.',
+ctaT:n=>`Want ${n} to guide you?`,ctaS:'Book a free consultation – your numbers are sent with the message.',ctaB:'Book on WhatsApp',
+waMsgCoach:(n,bf,g,k,w)=>`Hi ${n}, I used your Body Check: ${bf}% body fat, goal: ${g}, ${k} kcal/day, weight ${w}. I'd like a free consultation.`,
+shareTxt:(bf,k,p,d)=>`My Body Check: ${bf}% body fat · plan: ${k} kcal and ${p} g protein a day · ${d} workouts a week. Get yours free: `,
+goalN:{lose:'fat loss',keep:'maintain',gain:'muscle gain'},
+logEmpty:'No entries yet. Add your first weight above.',logDel:'Delete',logW:u=>`Weight (${u})`,chartLeg:'orange = your weight · dashed = the plan',
+adaptWait:(n,d)=>`Keep logging: the check runs after 2 weeks and 3 entries (now ${n} entries over ${d} days).`,
+adaptOk:(a,p)=>`<b>On track.</b> Your real pace is ${a} a week against a plan of ${p}. No change needed.`,
+adaptSlow:(a,p,ch,nk)=>`<b>Slower than planned.</b> Your real pace is ${a} a week against ${p}. Eat <b>${ch} kcal less</b> a day (new target ${nk} kcal).`,
+adaptFast:(a,p,ch,nk)=>`<b>Faster than planned.</b> Your real pace is ${a} a week against ${p} – risk of muscle loss. Eat <b>${ch} kcal more</b> a day (new target ${nk} kcal).`,
+adaptFloor:m=>` Food can't go lower safely, so add ${m} min of brisk walking a day instead.`,adaptApply:'Apply new target',adaptUpdate:w=>`Use my latest weight (${w})`,adaptReset:'Undo adjustments',adaptNow:(k,w)=>`Adjustment in use: ${k?`${k>0?'+':''}${k} kcal/day`:''}${k&&w?' and ':''}${w?`+${w} min walking/day`:''}. The next check uses only entries from that day on.`,adaptSlowWalk:(a,p)=>`<b>Slower than planned.</b> Your real pace is ${a} a week against ${p}, and food is already at the safe minimum.`,
+cond:{preg:'Pregnant',bf:'Breastfeeding',diab:'Diabetes / on sugar medicine',bp:'High blood pressure',heart:'Heart condition',thy:'Thyroid (hypothyroid)',pcos:'PCOS / PCOD',knee:'Knee pain',back:'Lower-back pain'},
+al:{preg:['Pregnant: no fat-loss plan','The plan is set to maintain weight with light, low-impact exercise. Your doctor\'s advice comes first: weight gain in pregnancy is normal and needed. Avoid lying flat on your back after the first trimester, contact sports and getting overheated.'],
+bf:['Breastfeeding','Calories are set to maintenance plus about 400 kcal for milk production. Lose weight slowly later, only after checking with your doctor.'],
+diab:['Diabetes / sugar medicine','A calorie deficit plus exercise can drop sugar too low on insulin or sulfonylureas (glimepiride, gliclazide). Check sugar before and after workouts, carry glucose tablets, don\'t skip meals, and tell your doctor – your dose may need to change as you lose weight. Pace is capped at 0.5 kg a week.'],
+bp:['High blood pressure','No heavy sets or breath-holding: weights are kept moderate (10–15 reps, breathe out on effort), cardio is low-impact. Cut salt, pickles and packaged snacks. Get your doctor\'s OK if BP is above 160/100.'],
+heart:['Heart condition – see your doctor first','Only start with your cardiologist\'s OK. The plan uses light, low-impact cardio and light weights. Stop at once if you get chest pain, breathlessness or dizziness.'],
+thy:['Thyroid','Take your thyroid tablet on an empty stomach, 30–60 min before breakfast and away from milk, soy and calcium. Weight may come off slower; pace is capped at 0.5 kg a week.'],
+pcos:['PCOS / PCOD','Strength training and protein at every meal help most with insulin resistance. Prefer whole grains, dal and vegetables over sweets and maida; even 5–10% weight loss often improves periods.'],
+knee:['Knee pain','Deep squats, lunges, jumps and running are swapped for knee-friendly moves (box squats to pain-free depth, glute bridges, step-ups on a low step, bike, cross trainer). Stop any move that hurts.'],
+back:['Lower-back pain','Deadlifts and heavy back squats are swapped for hip thrusts, goblet squats, chest-supported rows and core moves like bird-dog. Keep the spine neutral; see a physio if pain goes down the leg.']},
+alOld:'Over 60 and new to exercise: get a doctor\'s check-up first and start with the lighter plan shown.'
+},
+hi:{
+title:'बॉडी चेक प्लानर',lede:'अपनी लंबाई, वज़न, उम्र और लिंग डालें। आपको मिलेगा: बॉडी फ़ैट का अनुमान, सेहत के जोखिम, बॉडी-फ़ैट मैप, हफ़्ते का वर्कआउट प्लान और आपके बजट में भारतीय डाइट प्लान।',
+print:'PDF डाउनलोड करें',gender:'लिंग',male:'पुरुष',female:'महिला',units:'इकाई',age:'उम्र (साल)',height:'लंबाई',weight:'वज़न',activity:'रोज़ की गतिविधि',act1:'डेस्क जॉब, कम चलना',act2:'हल्की: दिन में कुछ समय खड़े रहना',act3:'मध्यम: सक्रिय काम या खेल',act4:'बहुत सक्रिय: मेहनत वाला काम',goal:'लक्ष्य',gAuto:'सिस्टम तय करे',gLose:'फ़ैट घटाना',gKeep:'वज़न बनाए रखना / टोन करना',gGain:'मसल बनाना',pace:'वज़न घटाने की रफ़्तार (प्रति हफ़्ता)',where:'वर्कआउट कहाँ करेंगे?',gym:'जिम',equip:'घर: डंबल / बैंड',homeBw:'घर: बिना सामान',exp:'वर्कआउट का अनुभव',exp0:'नया (6 महीने से कम)',exp1:'थोड़ा (6 महीने से 2 साल)',exp2:'अनुभवी (2+ साल)',
+healthQ:'क्या इनमें से कुछ है? (सुरक्षित प्लान के लिए ज़रूरी)',tapeQ:'ज़्यादा सही बॉडी फ़ैट के लिए टेप माप (सुझाया गया)',waist:'कमर, नाभि पर (cm)',neck:'गर्दन (cm)',hip:'कूल्हे, सबसे चौड़ी जगह (cm)',tapeNote:'कमर और गर्दन (महिलाओं के लिए कूल्हे भी) डालने पर US Navy टेप तरीका इस्तेमाल होता है, आमतौर पर 3–4% तक सही। इनके बिना BMI और उम्र से अनुमान लगता है, जो मस्कुलर या बहुत दुबले लोगों के लिए 5% या ज़्यादा ग़लत हो सकता है।',saved:'उदाहरण के आँकड़े भरे हैं; इन्हें बदलें तो नीचे सब अपडेट हो जाएगा। आपकी जानकारी सिर्फ़ इसी ब्राउज़र में सेव रहती है।',
+condTitle:'आपके शरीर की अभी की हालत',projection:'अनुमान',risksTitle:'अगर कुछ नहीं बदला: इन जोखिमों पर ध्यान दें',risksNote:'जोखिम बॉडी फ़ैट, BMI (एशियाई मानक), कमर और उम्र से निकाले गए हैं। ये संभावना हैं, बीमारी की पुष्टि नहीं; ब्लड टेस्ट (शुगर, HbA1c, लिपिड, लिवर) से असली स्थिति पता चलती है।',
+progTitle:'अपनी प्रगति ट्रैक करें',progSub:'हफ़्ते में 3 बार सुबह वज़न लें और यहाँ लिखें (इसी ब्राउज़र में सेव)। 2 हफ़्ते बाद प्लान आपकी असली प्रगति देखकर कैलोरी बदल देता है, जैसे कोच करता है।',date:'तारीख़',waistOpt:'कमर (cm, वैकल्पिक)',addEntry:'जोड़ें',
+mapTitle:'आपका बॉडी-फ़ैट मैप',mapSub:'हर 5% पर आपका शरीर लगभग कैसा दिखेगा, मसल वही रखते हुए। समय लगभग 0.5 kg फ़ैट घटने या 0.25 kg बढ़ने प्रति हफ़्ता मानकर।',yourWeek:'आपका हफ़्ता',dietTitle:'डाइट प्लान',foodType:'खाने का प्रकार',veg:'शाकाहारी',eggT:'शाकाहारी + अंडा',non:'मांसाहारी',budget:'महीने का खाने का बजट',cuisine:'खाने की शैली',north:'उत्तर (रोटी)',south:'दक्षिण (चावल, इडली)',west:'पश्चिम (रोटली, भाखरी)',east:'पूर्व (चावल)',restr:'खाने के नियम',rNone:'कोई नहीं',rJain:'जैन',rDairy:'डेयरी नहीं',mealPat:'भोजन',pStd:'3 भोजन + नाश्ता',pTwo:'2 भोजन',pNight:'नाइट शिफ़्ट',fasting:'व्रत / रोज़ा',fNone:'कोई नहीं',fVrat:'व्रत के दिन (नवरात्रि, एकादशी)',fRam:'रमज़ान',swapHint:'किसी खाने के आगे ⇄ दबाएँ तो उतने ही प्रोटीन (या कैलोरी) वाला दूसरा खाना आ जाएगा। ',resetSwaps:'बदलाव हटाएँ',
+labTitle:'ब्लड टेस्ट और सप्लीमेंट',labSub:'ज़्यादातर भारतीयों में विटामिन D कम होता है, और बहुत से लोगों (ख़ासकर शाकाहारी) में B12। पहले टेस्ट कराएँ, फिर सिर्फ़ वही सप्लीमेंट लें जो डॉक्टर कहें।',shareTitle:'अपना प्लान सेव या शेयर करें',waShare:'WhatsApp पर शेयर करें',copyLink:'लिंक कॉपी करें',copied:'लिंक कॉपी हो गया ✓',coachQ:'जिम और कोच के लिए: इस टूल पर अपना नाम और WhatsApp लगाएँ',cName:'जिम / कोच का नाम',cWa:'WhatsApp नंबर (देश कोड के साथ)',cLogo:'लोगो (वेब पता)',cLogoFile:'…या लोगो अपलोड करें (सिर्फ़ इसी डिवाइस पर)',makeLink:'मेरा ब्रांडेड लिंक बनाएँ',clearCoach:'ब्रांडिंग हटाएँ',coachNote:'ब्रांडेड लिंक अपने Instagram बायो या WhatsApp स्टेटस पर लगाएँ। जो भी खोलेगा उसे आपका नाम और "फ़्री कंसल्टेशन बुक करें" बटन दिखेगा, जो उनके आँकड़ों के साथ आपसे WhatsApp चैट खोलता है। किसी सर्वर पर कुछ सेव नहीं होता।',
+foot:'इस्तेमाल किए गए फ़ॉर्मूले: कैलोरी के लिए Mifflin–St Jeor, बॉडी फ़ैट के लिए Deurenberg (BMI से) या US Navy टेप तरीका, उम्र के हिसाब से बॉडी-फ़ैट रेंज, एशियाई BMI मानक, कार्डियो कैलोरी के लिए ACSM समीकरण, WHO की 150–300 मिनट कार्डियो प्रति हफ़्ता की सलाह। खाने की कीमतें 2026 की अनुमानित भारतीय कीमतें हैं और शहर के हिसाब से बदलती हैं। यह प्लानिंग का साधन है, डॉक्टरी सलाह नहीं; कोई बीमारी हो, गर्भवती हों, या 60 से ऊपर हों और कसरत नई हो, तो पहले डॉक्टर से पूछें।',
+bodyFat:'% बॉडी फ़ैट',bmiM:'BMI और उम्र से अनुमान (Deurenberg)। ज़्यादा सही नतीजे के लिए टेप माप डालें।',navyM:'US Navy टेप तरीका (कमर और गर्दन)।',navyF:'US Navy टेप तरीका (कमर, कूल्हे और गर्दन)।',
+cat:{Underfat:'फ़ैट बहुत कम','Lean and healthy':'दुबले और स्वस्थ',Healthy:'स्वस्थ','High end of healthy':'स्वस्थ की ऊपरी सीमा',Overweight:'ज़्यादा वज़न','Obese range':'मोटापा'},
+bmi:{Underweight:'कम वज़न',Normal:'सामान्य',Overweight:'ज़्यादा वज़न','Obese (class I)':'मोटापा (श्रेणी I)','Obese (class II)':'मोटापा (श्रेणी II)'},
+fatMass:'फ़ैट का वज़न',lean:'लीन मास (मसल, हड्डी, पानी)',eat:g=>'रोज़ खाएँ – '+{lose:'फ़ैट घटाने के लिए',keep:'बनाए रखने के लिए',gain:'मसल बनाने के लिए'}[g],
+sum1:(bf,cat,who)=>`<strong>${bf}% बॉडी फ़ैट</strong> पर आप ${who} में <strong>${cat}</strong> श्रेणी में हैं। `,whoM:(a,b)=>`अपनी उम्र के पुरुषों (स्वस्थ: ${a}–${b}%)`,whoF:(a,b)=>`अपनी उम्र की महिलाओं (स्वस्थ: ${a}–${b}%)`,
+sumLose:(t,d,tw,p,wk)=>`स्वस्थ लक्ष्य लगभग ${t}% है, यानी मसल रखते हुए करीब <strong>${d} फ़ैट</strong> घटाना (लगभग ${tw} तक)। ${p} प्रति हफ़्ते पर इसमें करीब ${wk} हफ़्ते लगेंगे।`,
+sumGain:r=>`आपके पास फ़ैट कम है। प्राथमिकता है थोड़ी ज़्यादा कैलोरी के साथ मसल बनाना: लगभग ${r} प्रति हफ़्ता।`,sumKeep:'आप स्वस्थ रेंज में हैं। अब लक्ष्य है फ़ैट स्थिर रखते हुए ताक़त और फ़िटनेस बढ़ाना।',
+sumAuto:g=>` सिस्टम ने आपका लक्ष्य चुना: <strong>${{lose:'फ़ैट घटाना',keep:'बनाए रखना और टोन करना',gain:'मसल बनाना'}[g]}</strong>।`,
+kvBmi:'BMI (एशियाई मानक)',kvWhtr:'कमर-लंबाई अनुपात',kvWhtrAdd:'ऊपर कमर डालें',high:'ज़्यादा',raised:'बढ़ा हुआ',healthy:'स्वस्थ',kvBmr:'आराम में जलने वाली कैलोरी (BMR)',kvTdee:'रोज़ जलने वाली कैलोरी (बिना कसरत)',kvEx:'कार्डियो से अतिरिक्त कैलोरी',kvFood:'रोज़ का खाने का लक्ष्य',kvDef:'खाने + कार्डियो से कमी',kvPace:'अनुमानित रफ़्तार',perDay:'/दिन औसत',
+rateLose:p=>p+'/हफ़्ता घटना',rateGain:r=>'≈'+r+'/हफ़्ता बढ़ना',steady:'स्थिर',today:'आज',week:'हफ़्ता',
+projLose:p=>`${p} प्रति हफ़्ते पर, यह मानते हुए कि आप वेट ट्रेनिंग करते हैं और प्रोटीन पूरा लेते हैं ताकि ज़्यादातर फ़ैट घटे। पहले 1–2 हफ़्ते ज़्यादा घटता है (पानी); बाद में थोड़ा धीमा।`,projGain:'धीरे-धीरे लगभग 0.25 kg प्रति हफ़्ता; नए लोगों में इसका लगभग आधा मसल।',projKeep:'वज़न स्थिर रहता है और ट्रेनिंग से बॉडी फ़ैट धीरे-धीरे घटता है।',
+lvl:{Low:'कम',Moderate:'मध्यम',High:'ज़्यादा'},
+paceNoLose:'रफ़्तार तभी लागू होती है जब लक्ष्य फ़ैट घटाना हो।',paceFast:(l,s)=>`<b>तेज़:</b> शरीर के वज़न के 1% से ज़्यादा प्रति हफ़्ता (${l})। भूख और कुछ मसल घटने की संभावना; सुझाई रफ़्तार ${s} है। `,paceCap:s=>`आपकी सेहत की स्थिति की वजह से <b>${s} तक सीमित</b>। `,
+paceWalk:(fl,m)=>`खाना ${fl} kcal से कम सुरक्षित नहीं, इसलिए इस रफ़्तार के लिए <b>रोज़ ${m} मिनट अतिरिक्त तेज़ चलना</b> भी ज़रूरी है।`,paceWalkHard:' इसे बनाए रखना मुश्किल है; धीमी रफ़्तार से शायद आप जल्दी पहुँचेंगे।',paceEat:k=>`रोज़ ${k} kcal खाएँ; बाकी कमी कार्डियो से पूरी होगी।`,suggested:'सुझाया',
+youNow:'आप अभी',weeksT:w=>'~'+w+' हफ़्ते',slip:'अगर आदतें बिगड़ें',current:'अभी',healthyRange:'स्वस्थ रेंज',
+woTitleGym:d=>`वर्कआउट प्लान: हफ़्ते में ${d} दिन जिम`,woTitleHome:d=>`वर्कआउट प्लान: हफ़्ते में ${d} दिन घर पर स्ट्रेंथ`,
+woSub:(lv,pace,h,d,m,cd,pm,low,walk)=>`आपके ${lv} स्तर, उम्र, सेहत और लक्ष्य${pace?` तथा ${pace} प्रति हफ़्ते की रफ़्तार`:''} के आधार पर आपको हफ़्ते में लगभग ${h} घंटे चाहिए: ${m} मिनट के ${d} स्ट्रेंथ सेशन और ${pm} मिनट के ${cd} कार्डियो सेशन। कम दिन = धीमे नतीजे; ज़्यादा दिन = नतीजों से पहले थकान। कार्डियो ${low?'जोड़ों और दिल की सुरक्षा के लिए हल्का (लो-इम्पैक्ट) रखा गया है':'इनक्लाइन वॉक, क्रॉस ट्रेनर और इंटरवल का मिश्रण है'}।${walk?` साथ में रफ़्तार बनाए रखने के लिए रोज़ ${walk} मिनट अतिरिक्त तेज़ चलना।`:''}`,
+lvls:['नए','मध्यम','अनुभवी'],figHrs:'हफ़्ते का कसरत समय',figStr:m=>'स्ट्रेंथ ट्रेनिंग · हर बार '+m+' मिनट',figDays:'दिन',figCardio:'हफ़्ते का कार्डियो',figBurn:'हफ़्ते में कार्डियो से जली कैलोरी',figSteps:'रोज़ के क़दम',
+rest:'आराम: हल्की सैर, स्ट्रेचिंग',kSteps:'हज़ार क़दम',days:['सोम','मंगल','बुध','गुरु','शुक्र','शनि','रवि'],
+fewerT:d=>`${d} दिन नहीं हो पाएँगे?`,fewerSub:'प्लान वही रहेगा – कम दिनों से यह फ़र्क पड़ेगा:',fewerRow:(d,m,m0,x)=>`<b>${d} दिन:</b> उतना ही फ़ैट घटाने के लिए हर कार्डियो सेशन ${m0} से ${m} मिनट का होगा, और ${x}% कम स्ट्रेंथ ट्रेनिंग – घटे वज़न में मसल ज़्यादा होगी, इसलिए उसी वज़न पर शरीर ढीला दिखेगा`,fewerRowK:(d,x)=>`<b>${d} दिन:</b> लगभग ${x}% कम ट्रेनिंग – ताक़त और शेप में धीमा बदलाव`,fewerNow:(p,w)=>`सुझाया प्लान: ${p} प्रति हफ़्ता → ~${w} हफ़्ते।`,
+cardioGym:'जिम कार्डियो: मशीन सेटिंग',cardioHome:'घर या बाहर कार्डियो',warm:'वार्म-अप 5 मिनट',main:m=>`मुख्य ${m} मिनट`,cool:'कूल-डाउन 3 मिनट',easy:'आसान रफ़्तार',inMin:m=>`${m} मिनट में`,per10:'kcal प्रति 10 मिनट',
+noGym:'जिम नहीं जा पाए?',noGymWalk:(m,n)=>`5.5 km/h पर <b>${m} मिनट</b> तेज़ चलना एक ${n} सेशन जितनी कैलोरी जलाता है`,keepSteps:s=>`दोनों हालत में रोज़ <b>${s} क़दम</b> पूरे करें`,calNote:w=>`कैलोरी आपके वज़न (${w}) के लिए, ACSM समीकरणों से; मशीन की स्क्रीन अक्सर 10–20% ज़्यादा दिखाती है`,
+dailyWalk:'रोज़ चलना',aimSteps:s=>`रोज़ कुल <b>${s} क़दम</b> का लक्ष्य`,mealWalk:'हर भोजन के बाद 10 मिनट चलना ब्लड शुगर में मदद करता है',calNoteH:w=>`कैलोरी आपके वज़न (${w}) के लिए, ACSM चलने और दौड़ने के समीकरणों से`,
+warmupG:'वार्म-अप: 5 मिनट क्रॉस ट्रेनर, लेवल 3, फिर पहली कसरत का 1 हल्का सेट',warmupH:'वार्म-अप: 5 मिनट तेज़ क़दमताल और हाथ घुमाना, फिर पहली कसरत का 1 हल्का सेट',finisher:'फ़िनिशर',
+progT:'आगे कैसे बढ़ें',prog:['सेट्स के बीच 60–90 सेकंड आराम (भारी लिफ़्ट पर 2 मिनट)','जब सब सेट्स में ऊपरी रेप्स हो जाएँ, 2.5 kg या कठिन वेरिएशन जोड़ें','पहले 5 मिनट वार्म-अप; थकान से 1–2 रेप पहले रुकें','7–8 घंटे नींद: इसके बिना फ़ैट घटना और मसल बनना दोनों रुक जाते हैं'],
+dietSub:(k,p)=>`रोज़ ${k} kcal और ${p} g प्रोटीन के लिए बनाया गया। मात्रा आपके आँकड़ों के हिसाब से तय है।`,mCal:'रोज़ की कैलोरी',mPro:x=>'प्रोटीन · '+x+' g प्रति kg',mCarb:'कार्बोहाइड्रेट',mFat:'फ़ैट',mWater:'पानी',
+meals:{B:'नाश्ता',L:'दोपहर का खाना',SN:'शाम का नाश्ता',D:'रात का खाना',O:'खाना पकाने का तेल (पूरा दिन)',BR:'ब्रंच (देर से नाश्ता + दोपहर)',DS:'रात का खाना + नाश्ता',N1:'भोजन 1 – उठने के बाद (~2 बजे दोपहर)',N2:'भोजन 2 – शिफ़्ट से पहले (~7 बजे शाम)',N3:'भोजन 3 – शिफ़्ट में (~1 बजे रात)',N4:'नाश्ता – शिफ़्ट के बाद (~6 बजे सुबह)',SE:'सहरी (सुबह होने से पहले)',IF:'इफ़्तार (सूर्यास्त पर)',RD:'रात का खाना (ईशा के बाद)',RL:'सोने से पहले',VB:'सुबह',VL:'दोपहर',VS:'शाम',VD:'रात'},
+dayT:'रोज़ का कुल बनाम आपका लक्ष्य',perDayH:'प्रति दिन',target:'लक्ष्य',thisPlan:'यह प्लान',gap:'अंतर',kcal:'कैलोरी',protein:'प्रोटीन',carbs:'कार्बोहाइड्रेट',fat:'फ़ैट',foodCost:'खाने का ख़र्च',moMax:'/माह अधिकतम',greenNote:'हरा: लक्ष्य के 8% के भीतर। पीला: ज़्यादा अंतर; ख़र्च वाली पट्टी के नीचे नोट देखें।',
+shopT:'महीने की ख़रीदारी सूची',food:'खाना',perMonth:'प्रति माह',costMonth:'ख़र्च/माह',total:'कुल',perDayL:'प्रति दिन',perMonthL:'प्रति माह (लगभग)',
+band:{low:'₹1k–3k प्लान: दाल, सोया, अंडे, मौसमी सब्ज़ी-फल',mid:'₹3k–5k प्लान: पनीर, चिकन, मछली भी',high:'₹5k–7k प्लान: प्रोटीन पाउडर, टोफ़ू, मेवे भी'},totalsL:(k,p)=>`कुल ${k} kcal, ${p} g प्रोटीन`,
+overB:(c,cap)=>`आपकी कैलोरी ज़रूरत ज़्यादा है, इसलिए सबसे सस्ता प्लान भी लगभग ₹${c} प्रति माह का है, ₹${cap} सीमा से थोड़ा ज़्यादा। अगला बजट चुनें, या दूध-अंडे की जगह ज़्यादा दाल और सोया लें।`,
+shortP:(p,t,veg)=>`यह प्लान कैलोरी बढ़ाए बिना आपके ${t} g में से ${p} g प्रोटीन तक पहुँचता है। कमी पूरी करने के लिए ${veg?'20–30 g ज़्यादा सोया चंक्स या एक स्कूप प्रोटीन पाउडर लें':'अंडे की सफ़ेदी जोड़ें, या पनीर-दाल की जगह चिकन या मछली लें'}।`,
+roundK:(k,t)=>`मात्रा पूरी रोटी और अंडे में गोल होती है, इसलिए यह ${t} के लक्ष्य के बजाय ${k} kcal पर आता है। एक रोटी कम-ज़्यादा करें।`,
+eatMore:'ज़्यादा खाएँ',cutDown:'कम करें',rules:'आसान नियम',
+moreVeg:['दिन में दो बार दाल, चना, राजमा, सोया','प्रोटीन के लिए पनीर, टोफ़ू, दही, दूध','आधी थाली सब्ज़ी और सलाद','गेहूँ, बाजरा, ज्वार की रोटी'],moreEgg:['रोज़ 2–4 अंडे (उबले, भुर्जी, ऑमलेट)','रोज़ दाल, चना और दही','आधी थाली सब्ज़ी और सलाद','मैदे की जगह साबुत अनाज की रोटी'],moreNon:['चिकन ब्रेस्ट, मछली, अंडे (ग्रिल्ड, करी, तंदूरी)','रोज़ दाल और दही','आधी थाली सब्ज़ी और सलाद','चावल नपी मात्रा में'],
+less:['मीठी चाय: दिन में 1 कप, कम चीनी','तले स्नैक्स: समोसा, फ़रसाण, भजिया, नमकीन','मिठाई, कोल्ड ड्रिंक, पैकेट जूस','मैदा: बेकरी, सफ़ेद ब्रेड, बिस्किट'],lessGain:'भोजन छोड़ना: हर 3–4 घंटे खाएँ',lessLate:'रात के खाने के बाद देर रात खाना',
+rulesL:['हर भोजन में प्रोटीन, लगभग हथेली जितना','पहले 2 हफ़्ते खाना तौलें ताकि मात्रा समझ आए','हफ़्ते में 3 बार सुबह वज़न लें और ऊपर लिखें','हर 4 हफ़्ते नए वज़न के साथ यह टूल दोबारा चलाएँ'],
+jainNote:'जैन: प्याज़, लहसुन, आलू और ज़मीन के नीचे उगने वाली सब्ज़ियाँ नहीं; सब्ज़ी और सलाद ज़मीन के ऊपर उगने वाली सब्ज़ियों से।',dairyNote:'डेयरी नहीं: दूध, दही, पनीर और whey की जगह सोया दूध, टोफ़ू और प्लांट प्रोटीन। कैल्शियम वाला सोया दूध चुनें।',
+vratT:'व्रत के दिन का प्लान',vratSub:'नवरात्रि, एकादशी और अन्य व्रत के दिनों के लिए: उतनी ही कैलोरी और प्रोटीन, व्रत के खाने से (बिना अनाज)।',ramNote:'रमज़ान: सारा खाना सूर्यास्त से सुबह तक। इफ़्तार से सहरी के बीच 2.5–3 लीटर पानी पिएँ; सहरी में प्रोटीन और फ़ाइबर ज़्यादा रखें ताकि रोज़ा आसान रहे।',
+labsT:'ये टेस्ट कराएँ (लगभग लैब कीमत)',labs:[['HbA1c + फ़ास्टिंग शुगर','₹300–600'],['लिपिड प्रोफ़ाइल','₹300–600'],['थायरॉइड (TSH)','₹250–500'],['विटामिन B12','₹500–900'],['विटामिन D (25-OH)','₹800–1,500'],['CBC (हीमोग्लोबिन)','₹200–400'],['लिवर (LFT)','₹400–700']],labsNote:'बड़ी लैब के फ़ुल-बॉडी पैकेज अक्सर ये सब ₹1,000–2,500 में कर देते हैं – अलग-अलग टेस्ट से सस्ता। साल में एक बार, या कुछ ज़्यादा हो तो हर 3–6 महीने।',
+suppT:'डॉक्टर से इन सप्लीमेंट के बारे में पूछें',supp:['<b>विटामिन D3</b> – धूप के बावजूद ज़्यादातर भारतीयों में कम','<b>विटामिन B12</b> – शाकाहारियों को लगभग हमेशा ज़रूरत; कई मांसाहारियों को भी','<b>आयरन + फ़ोलिक एसिड</b> – पीरियड वाली महिलाएँ, अगर हीमोग्लोबिन कम हो','<b>ओमेगा-3</b> – वैकल्पिक, अगर मछली कम खाते हैं','<b>क्रिएटिन मोनोहाइड्रेट 3–5 g रोज़</b> – वैकल्पिक, स्ट्रेंथ ट्रेनिंग के लिए सबसे ज़्यादा जाँचा हुआ सप्लीमेंट'],suppNote:'पहले खाना: ऊपर का डाइट प्लान प्रोटीन पूरा करता है। सप्लीमेंट मापी गई कमी पूरी करता है, अंदाज़े से नहीं।',
+ctaT:n=>`क्या ${n} आपको गाइड करें?`,ctaS:'फ़्री कंसल्टेशन बुक करें – आपके आँकड़े मैसेज में साथ जाएँगे।',ctaB:'WhatsApp पर बुक करें',
+waMsgCoach:(n,bf,g,k,w)=>`नमस्ते ${n}, मैंने आपका बॉडी चेक इस्तेमाल किया: ${bf}% बॉडी फ़ैट, लक्ष्य: ${g}, रोज़ ${k} kcal, वज़न ${w}। मुझे फ़्री कंसल्टेशन चाहिए।`,
+shareTxt:(bf,k,p,d)=>`मेरा बॉडी चेक: ${bf}% बॉडी फ़ैट · प्लान: रोज़ ${k} kcal और ${p} g प्रोटीन · हफ़्ते में ${d} वर्कआउट। आप भी फ़्री में देखें: `,
+goalN:{lose:'फ़ैट घटाना',keep:'बनाए रखना',gain:'मसल बनाना'},
+logEmpty:'अभी कोई एंट्री नहीं। ऊपर अपना पहला वज़न जोड़ें।',logDel:'हटाएँ',logW:u=>`वज़न (${u})`,chartLeg:'नारंगी = आपका वज़न · डैश = प्लान',
+adaptWait:(n,d)=>`लिखते रहें: जाँच 2 हफ़्ते और 3 एंट्री के बाद होगी (अभी ${d} दिनों में ${n} एंट्री)।`,
+adaptOk:(a,p)=>`<b>सही राह पर।</b> आपकी असली रफ़्तार ${a} प्रति हफ़्ता है, प्लान ${p}। कोई बदलाव नहीं चाहिए।`,
+adaptSlow:(a,p,ch,nk)=>`<b>प्लान से धीमा।</b> आपकी असली रफ़्तार ${a} प्रति हफ़्ता है, प्लान ${p}। रोज़ <b>${ch} kcal कम</b> खाएँ (नया लक्ष्य ${nk} kcal)।`,
+adaptFast:(a,p,ch,nk)=>`<b>प्लान से तेज़।</b> आपकी असली रफ़्तार ${a} प्रति हफ़्ता है, प्लान ${p} – मसल घटने का जोखिम। रोज़ <b>${ch} kcal ज़्यादा</b> खाएँ (नया लक्ष्य ${nk} kcal)।`,
+adaptFloor:m=>` खाना और कम करना सुरक्षित नहीं, इसलिए इसकी जगह रोज़ ${m} मिनट तेज़ चलें।`,adaptApply:'नया लक्ष्य लागू करें',adaptUpdate:w=>`मेरा ताज़ा वज़न इस्तेमाल करें (${w})`,adaptReset:'बदलाव वापस लें',adaptNow:(k,w)=>`लागू बदलाव: ${k?`${k>0?'+':''}${k} kcal/दिन`:''}${k&&w?' और ':''}${w?`+${w} मिनट चलना/दिन`:''}। अगली जाँच सिर्फ़ उस दिन के बाद की एंट्री से होगी।`,adaptSlowWalk:(a,p)=>`<b>प्लान से धीमा।</b> आपकी असली रफ़्तार ${a} प्रति हफ़्ता है, प्लान ${p}, और खाना पहले से सुरक्षित न्यूनतम पर है।`,
+cond:{preg:'गर्भवती',bf:'स्तनपान',diab:'डायबिटीज़ / शुगर की दवा',bp:'हाई ब्लड प्रेशर',heart:'दिल की बीमारी',thy:'थायरॉइड (हाइपोथायरॉइड)',pcos:'PCOS / PCOD',knee:'घुटने का दर्द',back:'कमर (पीठ के निचले हिस्से) का दर्द'},
+al:{preg:['गर्भवती: वज़न घटाने का प्लान नहीं','प्लान वज़न बनाए रखने और हल्की, लो-इम्पैक्ट कसरत पर सेट है। डॉक्टर की सलाह सबसे पहले: गर्भावस्था में वज़न बढ़ना सामान्य और ज़रूरी है। पहली तिमाही के बाद पीठ के बल सीधे लेटकर कसरत, संपर्क वाले खेल और ज़्यादा गर्मी से बचें।'],
+bf:['स्तनपान','कैलोरी maintenance + लगभग 400 kcal दूध बनने के लिए। वज़न बाद में धीरे घटाएँ, डॉक्टर से पूछकर।'],
+diab:['डायबिटीज़ / शुगर की दवा','इंसुलिन या सल्फ़ोनिल्यूरिया (ग्लिमेपिराइड, ग्लिक्लाज़ाइड) पर कैलोरी कमी और कसरत से शुगर बहुत गिर सकती है। वर्कआउट से पहले और बाद शुगर जाँचें, ग्लूकोज़ की गोली साथ रखें, भोजन न छोड़ें और डॉक्टर को बताएँ – वज़न घटने पर दवा बदलनी पड़ सकती है। रफ़्तार 0.5 kg प्रति हफ़्ता तक सीमित।'],
+bp:['हाई ब्लड प्रेशर','भारी सेट और साँस रोकना नहीं: वज़न मध्यम (10–15 रेप्स, ज़ोर लगाते समय साँस छोड़ें), कार्डियो लो-इम्पैक्ट। नमक, अचार और पैकेट स्नैक्स कम करें। BP 160/100 से ऊपर हो तो पहले डॉक्टर की मंज़ूरी।'],
+heart:['दिल की बीमारी – पहले डॉक्टर से मिलें','सिर्फ़ कार्डियोलॉजिस्ट की मंज़ूरी के बाद शुरू करें। प्लान में हल्का लो-इम्पैक्ट कार्डियो और हल्का वज़न है। सीने में दर्द, साँस फूलना या चक्कर आए तो तुरंत रुकें।'],
+thy:['थायरॉइड','थायरॉइड की गोली ख़ाली पेट, नाश्ते से 30–60 मिनट पहले लें, दूध, सोया और कैल्शियम से दूर। वज़न धीरे घट सकता है; रफ़्तार 0.5 kg प्रति हफ़्ता तक सीमित।'],
+pcos:['PCOS / PCOD','स्ट्रेंथ ट्रेनिंग और हर भोजन में प्रोटीन इंसुलिन रेज़िस्टेंस में सबसे ज़्यादा मदद करते हैं। मिठाई और मैदे की जगह साबुत अनाज, दाल और सब्ज़ियाँ; सिर्फ़ 5–10% वज़न घटने से भी अक्सर पीरियड सुधरते हैं।'],
+knee:['घुटने का दर्द','गहरे स्क्वाट, लंज, जंप और दौड़ की जगह घुटने के लिए आसान कसरतें (दर्द-रहित गहराई तक बॉक्स स्क्वाट, ग्लूट ब्रिज, नीची सीढ़ी पर स्टेप-अप, साइकिल, क्रॉस ट्रेनर)। जिस कसरत में दर्द हो उसे बंद करें।'],
+back:['कमर का दर्द','डेडलिफ़्ट और भारी बैक स्क्वाट की जगह हिप थ्रस्ट, गॉब्लेट स्क्वाट, चेस्ट-सपोर्टेड रो और बर्ड-डॉग जैसी कोर कसरतें। रीढ़ सीधी रखें; दर्द पैर में जाए तो फ़िज़ियो को दिखाएँ।']},
+alOld:'60 से ऊपर और कसरत नई है: पहले डॉक्टर से जाँच कराएँ और नीचे दिखाया हल्का प्लान शुरू करें।'
+}};
+const t=(k,...a)=>{const v=(L[S.lang]&&L[S.lang][k]!==undefined)?L[S.lang][k]:L.en[k];return typeof v==='function'?v(...a):v};
+function applyStatic(){document.documentElement.lang=S.lang;document.querySelectorAll('[data-i]').forEach(el=>{const v=t(el.dataset.i);if(typeof v==='string')el.textContent=v})}
+
+/* =================== units =================== */
+const imp=()=>S.units==='imperial';
+const Wt=kg=>imp()?(kg*2.20462).toFixed(1)+' lb':kg.toFixed(1)+' kg';
+const Wt0=kg=>imp()?Math.round(kg*2.20462)+' lb':Math.round(kg)+' kg';
+const Rate=kg=>imp()?(kg*2.20462).toFixed(2).replace(/0$/,'')+' lb':kg+' kg';
+
+/* =================== body silhouette =================== */
 function smooth(p){const L=p.length;let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;for(let i=0;i<L;i++){const a=p[(i-1+L)%L],b=p[i],c=p[(i+1)%L],e=p[(i+2)%L];const c1=[b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6],c2=[c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6];d+=`C${c1.map(v=>v.toFixed(1))} ${c2.map(v=>v.toFixed(1))} ${c[0].toFixed(1)},${c[1].toFixed(1)}`}return d+'Z'}
 function figure(sex,bf,id,c1,c2){
 const m=sex==='m',f=clamp((bf-(m?10:22))/30,0,1.2);
@@ -240,67 +519,72 @@ for(const s of [-1,1]){
 g+=`<path d="M${60+s*hx},138 L${60+s*(hx*.85+1)},198" stroke-width="${tw}"/><path d="M${60+s*(hx*.85+1)},198 L${60+s*(hx*.7+1)},244" stroke-width="${cw}"/><ellipse cx="${60+s*(hx*.7+3)}" cy="250" rx="${cw*.75}" ry="4" stroke="none"/>`;
 g+=`<path d="M${60+s*(Sh-4)},56 L${60+s*ex},100" stroke-width="${uw}"/><path d="M${60+s*ex},100 L${60+s*wx},140" stroke-width="${fw}"/><circle cx="${60+s*wx}" cy="147" r="${fw*.62}" stroke="none"/>`}
 const abs=bf<(m?14:20)?`<g stroke="${c2}" stroke-width="1" opacity=".55" fill="none"><path d="M60,74 V100"/><path d="M53,82 H67 M54,90 H66 M55,98 H65"/></g>`:'';
-return `<svg viewBox="0 0 120 262" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Body shape at ${Math.round(bf)}% body fat"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="10" y1="0" x2="110" y2="0"><stop offset="0" stop-color="${c2}"/><stop offset=".55" stop-color="${c1}"/></linearGradient></defs><ellipse cx="60" cy="254" rx="${36+8*f}" ry="4" fill="${c1}" opacity=".18"/><g fill="url(#${id})" stroke="url(#${id})" stroke-linecap="round">${g}<path d="${smooth(pts)}" stroke="none"/><circle cx="60" cy="20" r="${12+1.5*f}" stroke="none"/></g>${abs}<circle cx="60" cy="108" r="1.1" fill="${c2}" opacity=".6"/></svg>`}
+return `<svg viewBox="0 0 120 262" preserveAspectRatio="xMidYMax meet" role="img" aria-label="${Math.round(bf)}% body fat"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="10" y1="0" x2="110" y2="0"><stop offset="0" stop-color="${c2}"/><stop offset=".55" stop-color="${c1}"/></linearGradient></defs><ellipse cx="60" cy="254" rx="${36+8*f}" ry="4" fill="${c1}" opacity=".18"/><g fill="url(#${id})" stroke="url(#${id})" stroke-linecap="round">${g}<path d="${smooth(pts)}" stroke="none"/><circle cx="60" cy="20" r="${12+1.5*f}" stroke="none"/></g>${abs}<circle cx="60" cy="108" r="1.1" fill="${c2}" opacity=".6"/></svg>`}
 
-/* ---------- body maths ---------- */
-/* age-adjusted ranges (Gallagher et al. 2000): [underfat below, healthy up to, overweight up to] */
+/* =================== body maths =================== */
 const RNG={m:[[39,8,20,25],[59,11,22,28],[99,13,25,30]],f:[[39,21,33,39],[59,23,34,40],[99,24,36,42]]};
 const rng=(sex,age)=>RNG[sex].find(r=>age<=r[0]).slice(1);
 function cat(sex,bf,age){const[lo,hi,ov]=rng(sex,age);return bf<lo?'Underfat':bf<lo+(hi-lo)*.4?'Lean and healthy':bf<hi-3?'Healthy':bf<hi?'High end of healthy':bf<ov?'Overweight':'Obese range'}
+const catT=(sex,bf,age)=>t('cat')[cat(sex,bf,age)];
 function bmiClass(b){return b<18.5?'Underweight':b<23?'Normal':b<25?'Overweight':b<30?'Obese (class I)':'Obese (class II)'}
+const has=k=>S.cond.includes(k);
 function calc(){
 const v=k=>parseFloat($(k).value);
-const sex=S.sex,m=sex==='m',age=clamp(v('age')||30,16,85),h=clamp(v('ht')||170,130,220),w=clamp(v('wt')||70,35,220);
+const sex=S.sex,m=sex==='m',age=clamp(v('age')||30,16,85);
+const h=clamp(imp()?((v('htFt')||0)*30.48+(v('htIn')||0)*2.54):(v('ht')||170),130,220);
+const w=clamp(imp()?(v('wt')||150)*0.453592:(v('wt')||70),35,220);
 const bmi=w/(h/100)**2,waist=v('waist'),neck=v('neck'),hip=v('hip');
-let bf,method='Estimated from BMI and age (Deurenberg). Add tape measurements for better accuracy.';
-if(m&&waist>neck&&neck>0){bf=495/(1.0324-0.19077*Math.log10(waist-neck)+0.15456*Math.log10(h))-450;method='US Navy tape method (waist and neck).'}
-else if(!m&&waist&&neck&&hip&&waist+hip>neck){bf=495/(1.29579-0.35004*Math.log10(waist+hip-neck)+0.221*Math.log10(h))-450;method='US Navy tape method (waist, hips and neck).'}
+let bf,method=t('bmiM');
+if(m&&waist>neck&&neck>0){bf=495/(1.0324-0.19077*Math.log10(waist-neck)+0.15456*Math.log10(h))-450;method=t('navyM')}
+else if(!m&&waist&&neck&&hip&&waist+hip>neck){bf=495/(1.29579-0.35004*Math.log10(waist+hip-neck)+0.221*Math.log10(h))-450;method=t('navyF')}
 else bf=1.2*bmi+0.23*age-10.8*(m?1:0)-5.4;
 bf=clamp(bf,m?4:10,60);
 const fat=w*bf/100,lbm=w-fat,whtr=waist?waist/h:null;
 const bmr=10*w+6.25*h-5*age+(m?5:-161),act=parseFloat($('act').value),tdee=bmr*act;
-const[lowBF,hiBF,ovBF]=rng(sex,age),fitHi=hiBF-3,avgHi=ovBF;
+const[lowBF,hiBF,ovBF]=rng(sex,age),fitHi=hiBF-3;
+const pregLike=!m&&(has('preg')||has('bf'));
 let goal=$('goal').value;const auto=goal==='auto';
 if(auto)goal=(bf>fitHi||bmi>=25)?'lose':(bf<lowBF+2||bmi<18.5)?'gain':'keep';
+if(pregLike)goal='keep';
 const floor=m?1500:1200;
-const PACES=[.25,.5,.75,1],limit=w*.01;
+const limit=w*.01,capPace=(has('diab')||has('thy')||has('heart'))?.5:1;
 let sug=bf>=ovBF?(bmi>=32?1:.75):bf>hiBF?.5:.25;
 while(sug>.25&&sug>limit+.001)sug-=.25;
-const pace=goal==='lose'?(S.pace?+S.pace:sug):goal==='gain'?.25:0;
+sug=Math.min(sug,capPace);
+let pace=goal==='lose'?(S.pace?+S.pace:sug):goal==='gain'?.25:0;
+const capped=goal==='lose'&&pace>capPace;if(capped)pace=capPace;
 const target=Math.round(lowBF+(hiBF-lowBF)*(goal==='gain'?.45:.55));
-return{sex,m,age,h,w,bmi,bf,fat,lbm,whtr,waist,bmr,tdee,goal,auto,floor,pace,sug,limit,method,fitHi,avgHi,lowBF,hiBF,target,
+return{sex,m,age,h,w,bmi,bf,fat,lbm,whtr,waist,bmr,tdee,goal,auto,floor,pace,sug,limit,capped,capPace,method,fitHi,lowBF,hiBF,ovBF,target,pregLike,
 exp:+$('exp').value,place:S.place}}
-/* calories come last: diet deficit = needed deficit minus what cardio burns */
 function energy(c,wo){
 const need=c.pace*7700/7,ex=wo.netWeek/7;let kcal,extraWalk=0;
-if(c.goal==='lose'){kcal=c.tdee-Math.max(0,need-ex);if(kcal<c.floor){extraWalk=r5((c.floor-kcal)/wo.walkNet)+5;kcal=c.floor}}
-else kcal=c.tdee+ex*.8+(c.goal==='gain'?250:0);
+if(c.goal==='lose'){kcal=c.tdee-Math.max(0,need-ex);if(kcal<c.floor){extraWalk=r5((c.floor-kcal)/wo.walkNet)+5;kcal=c.floor}kcal=Math.max(c.floor,kcal+S.kAdj);extraWalk+=S.walkAdj||0}
+else{kcal=c.tdee+ex*.8+(c.goal==='gain'?250:0)+(c.pregLike&&has('bf')?400:0)+S.kAdj;kcal=Math.max(c.floor,kcal);extraWalk=S.walkAdj||0}
 kcal=Math.round(kcal/10)*10;
 const protein=Math.round(Math.min(c.lbm*(c.goal==='keep'?1.6:1.9),c.w*2));
 const fatG=Math.round(kcal*.25/9),carb=Math.max(0,Math.round((kcal-protein*4-fatG*9)/4));
 Object.assign(c,{kcal,protein,fatG,carb,extraWalk,ex,dietDef:Math.max(0,c.tdee-kcal)})}
 
-/* ---------- risks ---------- */
-const OVER=[['Type 2 diabetes / insulin resistance',1,'Belly fat makes the body resist insulin; South Asians tend to get it at lower weights.'],
-['High blood pressure',.9,'Extra weight makes the heart push harder through more blood vessels.'],
-['High cholesterol and triglycerides',.85,'More fat tissue usually means more fat in the blood and less "good" HDL.'],
-['Fatty liver (NAFLD)',1,'Fat stores in the liver first when there is a long calorie surplus; often silent for years.'],
-['Heart disease and stroke',.7,'Builds on BP, sugar and cholesterol together; risk climbs with age.'],
-['Sleep apnea and snoring',.75,'Fat around the neck narrows the airway at night; causes tiredness in the day.'],
-['Knee and lower-back pain',.7,'Each extra kilo puts about 4 kg of load on the knees when walking.']];
-const UNDER=[['Nutrient deficiency and anaemia',1,'Too little food usually means too little iron, B12 and protein.'],
-['Weak bones (osteoporosis later)',.8,'Low body weight and low calcium reduce bone density over time.'],
-['Low immunity and slow recovery',.8,'The body has little reserve to fight infections or repair muscle.'],
-['Hormone disruption',.9,'Very low fat can lower testosterone in men and stop periods in women.']];
+/* =================== risks =================== */
+const RK={en:{
+OVER:[['Type 2 diabetes / insulin resistance',1,'Belly fat makes the body resist insulin; South Asians tend to get it at lower weights.'],['High blood pressure',.9,'Extra weight makes the heart push harder through more blood vessels.'],['High cholesterol and triglycerides',.85,'More fat tissue usually means more fat in the blood and less "good" HDL.'],['Fatty liver (NAFLD)',1,'Fat stores in the liver first when there is a long calorie surplus; often silent for years.'],['Heart disease and stroke',.7,'Builds on BP, sugar and cholesterol together; risk climbs with age.'],['Sleep apnea and snoring',.75,'Fat around the neck narrows the airway at night; causes tiredness in the day.'],['Knee and lower-back pain',.7,'Each extra kilo puts about 4 kg of load on the knees when walking.']],
+UNDER:[['Nutrient deficiency and anaemia',1,'Too little food usually means too little iron, B12 and protein.'],['Weak bones (osteoporosis later)',.8,'Low body weight and low calcium reduce bone density over time.'],['Low immunity and slow recovery',.8,'The body has little reserve to fight infections or repair muscle.'],['Hormone disruption',.9,'Very low fat can lower testosterone in men and stop periods in women.']],
+T:['Low testosterone','Fat tissue converts testosterone to estrogen; low energy and libido follow.'],P:['PCOS and hormonal problems','Excess fat worsens insulin resistance, which drives PCOS and irregular periods.']},
+hi:{
+OVER:[['टाइप 2 डायबिटीज़ / इंसुलिन रेज़िस्टेंस',1,'पेट की चर्बी शरीर को इंसुलिन से लड़ने पर मजबूर करती है; दक्षिण एशियाई लोगों को यह कम वज़न पर भी होता है।'],['हाई ब्लड प्रेशर',.9,'ज़्यादा वज़न से दिल को ज़्यादा ज़ोर लगाना पड़ता है।'],['हाई कोलेस्ट्रॉल और ट्राइग्लिसराइड',.85,'ज़्यादा फ़ैट का मतलब आमतौर पर ख़ून में ज़्यादा फ़ैट और कम "अच्छा" HDL।'],['फ़ैटी लिवर (NAFLD)',1,'लंबे समय तक ज़्यादा कैलोरी से फ़ैट पहले लिवर में जमता है; सालों तक बिना लक्षण।'],['दिल की बीमारी और स्ट्रोक',.7,'BP, शुगर और कोलेस्ट्रॉल मिलकर बढ़ाते हैं; उम्र के साथ जोखिम बढ़ता है।'],['स्लीप एपनिया और खर्राटे',.75,'गर्दन की चर्बी रात में साँस की नली संकरी करती है; दिन में थकान।'],['घुटने और कमर का दर्द',.7,'हर अतिरिक्त किलो चलते समय घुटनों पर लगभग 4 kg भार डालता है।']],
+UNDER:[['पोषण की कमी और एनीमिया',1,'कम खाने से आमतौर पर आयरन, B12 और प्रोटीन कम होते हैं।'],['कमज़ोर हड्डियाँ (बाद में ऑस्टियोपोरोसिस)',.8,'कम वज़न और कम कैल्शियम से हड्डियाँ कमज़ोर होती हैं।'],['कम इम्यूनिटी और धीमी रिकवरी',.8,'शरीर के पास संक्रमण से लड़ने और मसल ठीक करने का भंडार कम।'],['हार्मोन गड़बड़ी',.9,'बहुत कम फ़ैट से पुरुषों में टेस्टोस्टेरोन घटता है और महिलाओं के पीरियड रुक सकते हैं।']],
+T:['कम टेस्टोस्टेरोन','फ़ैट टेस्टोस्टेरोन को एस्ट्रोजन में बदलता है; ऊर्जा और इच्छा कम होती है।'],P:['PCOS और हार्मोन की समस्या','ज़्यादा फ़ैट इंसुलिन रेज़िस्टेंस बढ़ाता है, जिससे PCOS और अनियमित पीरियड होते हैं।']}};
 function risks(c){
+const R=RK[S.lang]||RK.en;
 const ageF=c.age>=45?.25:c.age>=35?.12:0;
 const over=Math.max(0,(c.bf-c.fitHi)/12)+Math.max(0,(c.bmi-23)/12)+(c.whtr?Math.max(0,(c.whtr-.5)*6):0);
 const under=Math.max(0,(c.lowBF-c.bf)/4)+Math.max(0,(18.5-c.bmi)/2);
-const list=under>over?UNDER:OVER.concat([[c.m?'Low testosterone':'PCOS and hormonal problems',.65,c.m?'Fat tissue converts testosterone to estrogen; low energy and libido follow.':'Excess fat worsens insulin resistance, which drives PCOS and irregular periods.']]);
-const base=under>over?under:over;
-return list.map(([n,wt,why])=>{const s=clamp(base*wt+(under>over?0:ageF*(n.startsWith('Heart')?1.6:1)*(over>0?1:.4)),0,1);return{n,why,s,l:s<.3?'Low':s<.75?'Moderate':'High'}}).sort((a,b)=>b.s-a.s)}
+const isUnder=under>over;
+const list=isUnder?R.UNDER:R.OVER.concat([[...(c.m?R.T:R.P).slice(0,1),.65,(c.m?R.T:R.P)[1]]]);
+const base=isUnder?under:over;
+return list.map(([n,wt,why],i)=>{const heart=!isUnder&&i===4;const s=clamp(base*wt+(isUnder?0:ageF*(heart?1.6:1)*(over>0?1:.4)),0,1);return{n,why,s,l:s<.3?'Low':s<.75?'Moderate':'High'}}).sort((a,b)=>b.s-a.s)}
 
-/* ---------- workouts ---------- */
+/* =================== workouts =================== */
 const EX={gym:{
 'Full body A':['Goblet or back squat|3 × 8–10','Lat pulldown|3 × 10','Dumbbell bench press|3 × 10','Romanian deadlift|3 × 10','Plank|3 × 30–45 s'],
 'Full body B':['Leg press|3 × 12','Seated cable row|3 × 10','Seated dumbbell shoulder press|3 × 10','Hip thrust|3 × 10','Dead bug|3 × 10 each side'],
@@ -309,6 +593,14 @@ const EX={gym:{
 'Push':['Incline dumbbell press|4 × 8','Machine chest press|3 × 10','Lateral raise|3 × 15','Overhead triceps extension|3 × 12','Cable fly|2 × 15'],
 'Pull':['Deadlift or rack pull|3 × 5','Pull-up or lat pulldown|4 × 8','One-arm dumbbell row|3 × 10','Face pull|3 × 15','Hammer curl|3 × 12'],
 'Legs':['Front or hack squat|4 × 8','Bulgarian split squat|3 × 10 each','Leg extension|3 × 12','Lying leg curl|3 × 12','Hanging knee raise|3 × 12']},
+equip:{
+'Full body A':['Dumbbell goblet squat|3 × 10–12','Dumbbell floor press|3 × 10','One-arm dumbbell row|3 × 10 each','Dumbbell Romanian deadlift|3 × 10','Plank|3 × 30–45 s'],
+'Full body B':['Dumbbell reverse lunge|3 × 10 each leg','Band row (anchored in a door)|3 × 12','Seated dumbbell shoulder press|3 × 10','Dumbbell hip thrust on the floor|3 × 12','Dead bug|3 × 10 each side'],
+'Upper':['Dumbbell floor press|4 × 8–10','One-arm dumbbell row|4 × 10 each','Dumbbell shoulder press|3 × 10','Band pull-apart|3 × 15','Dumbbell curl + overhead extension|2 × 12 each'],
+'Lower':['Dumbbell goblet squat|4 × 10','Dumbbell Romanian deadlift|3 × 10','Dumbbell split squat|3 × 10 each','Band leg curl (lying)|3 × 15','Single-leg calf raise holding a dumbbell|3 × 12 each'],
+'Push':['Dumbbell floor press|4 × 10','Push-up|3 × max-2','Dumbbell lateral raise|3 × 15','Dumbbell overhead triceps extension|3 × 12','Band chest fly|2 × 15'],
+'Pull':['One-arm dumbbell row|4 × 10 each','Band lat pulldown (anchored high)|3 × 12','Band face pull|3 × 15','Dumbbell reverse fly|3 × 12','Dumbbell hammer curl|3 × 12'],
+'Legs':['Dumbbell goblet squat|4 × 12','Dumbbell step-up|3 × 10 each','Dumbbell hip thrust on the floor|3 × 12','Band lateral walk|3 × 12 each side','Hanging or lying leg raise|3 × 12']},
 home:{
 'Full body A':['Bodyweight squat|3 × 15–20','Push-up (knees or incline if needed)|3 × max-2','Backpack row (fill with books)|3 × 12','Glute bridge|3 × 15','Plank|3 × 30–45 s'],
 'Full body B':['Reverse lunge|3 × 10 each leg','Pike push-up|3 × 8','Towel row on a door|3 × 12','Single-leg hip hinge|3 × 10 each','Mountain climbers|3 × 30 s'],
@@ -317,49 +609,65 @@ home:{
 'Push':['Decline push-up (feet on bed)|4 × max-2','Pike push-up|3 × 8','Chair dips|3 × 12','Diamond push-up|3 × max','Plank shoulder taps|3 × 20'],
 'Pull':['Towel row on a door|4 × 12','Backpack row|3 × 12','Superman hold|3 × 20 s','Backpack curl|3 × 12','Reverse snow angels|3 × 12'],
 'Legs':['Jump squat (or slow squat)|4 × 12','Reverse lunge|3 × 12 each','Hip thrust on sofa|3 × 15','Side plank|3 × 30 s each','Calf raise on a step|3 × 25']}};
+/* knee / back / pregnancy swaps: [pattern, replacement] */
+const SWAP={
+knee:[[/^(Back squat|Goblet or back squat|Front or hack squat|Bodyweight squat|Dumbbell goblet squat|Jump squat.*)$/,'Box squat to a high bench (pain-free depth)'],[/lunge|split squat|Step-ups on stairs|step-up/i,'Glute bridge or hip thrust'],[/^Wall sit$/,'Leg press, short pain-free range'],[/Mountain climbers/,'Bird-dog'],[/Leg extension/,'Straight-leg raise'],[/Band lateral walk/,'Side-lying leg raise']],
+back:[[/Romanian deadlift|Deadlift or rack pull|Single-leg hip hinge/,'Hip thrust'],[/^Back squat$|^Goblet or back squat$|^Front or hack squat$/,'Goblet squat (light, upright)'],[/Superman hold/,'Bird-dog'],[/Hanging knee raise|Hanging or lying leg raise/,'Dead bug'],[/One-arm dumbbell row|Backpack row/,'Chest-supported row (on an incline bench or sofa back)'],[/Bent/,'Chest-supported row']],
+preg:[[/Plank shoulder taps|Plank|Dead bug|Mountain climbers|Hanging.*|leg raise/i,'Bird-dog'],[/Jump squat.*/,'Bodyweight squat to a chair'],[/Deadlift or rack pull/,'Light dumbbell Romanian deadlift'],[/Bench press|floor press|Dumbbell bench press/i,'Incline dumbbell press (light, not lying flat)'],[/Hip thrust.*|glute bridge/i,'Standing cable or band kickback']]};
+const LIGHT=/(\d) × (\d+)(–\d+)?$/;
+function adapt(name,sets){
+let n=name;for(const k of ['knee','back','preg']){if(!has(k))continue;for(const[re,to]of SWAP[k])if(re.test(n)){n=to;break}}
+let s=sets;if(has('bp')||has('heart')||(S.sex==='f'&&has('preg')))s=s.replace(/^(\d) × \d+(–\d+)?$/,'3 × 12–15').replace(/^4 × /,'3 × ').replace(/max-2|max/,'8–12');
+return[n,s]}
 const SPLIT={2:['Full body A','Full body B'],3:['Full body A','Full body B','Full body A'],4:['Upper','Lower','Upper','Lower'],5:['Upper','Lower','Push','Pull','Legs'],6:['Push','Pull','Legs','Push','Pull','Legs']};
 const SLOTS={2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};
-const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-function workout(c){
-const days=clamp([3,4,5][c.exp]-(c.age>=55?1:0)+(c.goal==='gain'&&c.exp>0?1:0),2,6);
-const rec=days;
-const lowImpact=c.bmi>=30||c.age>=55,e=c.exp,W=c.w;
+function workout(c,forceDays){
+const gentle=has('heart')||(!c.m&&has('preg'));
+let days=clamp([3,4,5][c.exp]-(c.age>=55?1:0)+(c.goal==='gain'&&c.exp>0?1:0),2,6);
+if(gentle)days=Math.min(days,3);
+const baseC=Math.max(1,6-days);
+if(forceDays)days=forceDays;
+const lowImpact=c.bmi>=30||c.age>=55||has('knee')||has('bp')||gentle,e=gentle?0:c.exp,W=c.w;
 const target=c.goal==='lose'?{.25:150,.5:200,.75:250,1:300}[c.pace]:c.goal==='keep'?150:90;
 const steps=c.goal==='lose'?Math.round(8000+c.pace*4000):c.goal==='keep'?8000:7000;
-const fin=c.goal==='lose'?(c.pace>=.75?20:15):c.goal==='keep'?10:0;
-const cDays=Math.max(1,6-days);
-const per=clamp(r5((target-days*fin)/cDays),20,60);
+const fin=gentle?0:c.goal==='lose'?(c.pace>=.75?20:15):c.goal==='keep'?10:0;
+const cDays=baseC;
+const per=clamp(r5((target-days*fin)/cDays),20,gentle?30:60);
 const cardioMin=days*fin+cDays*per;
-const sMin=[45,55,65][e]+fin;
+const sMin=(gentle?35:[45,55,65][e])+fin;
 const weekMin=days*sMin+cDays*per;
-/* ACSM metabolic equations: VO2 in ml/kg/min; 5 kcal per litre O2 */
 const vw=(k,g)=>{const v=k*1000/60;return .1*v+1.8*v*g/100+3.5},vr=(k,g)=>{const v=k*1000/60;return .2*v+.9*v*g/100+3.5};
 const gross=vo=>vo*W/1000*5,net=vo=>(vo-3.5)*W/1000*5,warm=vw(4,0);
 const P=[];
 if(c.place==='gym'){
-const sp=lowImpact?[4.5,4.8,5][e]:[5,5.5,5.8][e],inc=lowImpact?[4,6,8][e]:[6,9,12][e];
+const sp=lowImpact?[4.5,4.8,5][e]:[5,5.5,5.8][e],inc=gentle?2:lowImpact?[4,6,8][e]:[6,9,12][e];
 P.push({n:'Treadmill incline walk',vo:vw(sp,inc),main:`${sp} km/h · incline ${inc}%`,tip:'Don\'t hold the rails; it cuts the burn by a third.'});
-const lv=[5,7,9][e],met=[5,6,7][e];
+const lv=gentle?3:[5,7,9][e],met=gentle?4:[5,6,7][e];
 P.push({n:'Cross trainer',vo:met*3.5,main:`Level ${lv} · 55–65 strides/min`,tip:'Push and pull the handles; keep heels down.'});
 if(!lowImpact){const I=[[8,1,5,2],[9,2,5.5,1],[11,1,6,1]][e];
 P.push({n:'Treadmill intervals',vo:(vr(I[0],1)*I[1]+vw(I[2],1)*I[3])/(I[1]+I[3]),main:`Run ${I[1]} min at ${I[0]} km/h, walk ${I[3]} min at ${I[2]} km/h · incline 1%`,tip:'Repeat the run–walk block for the main time.'})}
-else{const wt=[60,80,100][e];P.push({n:'Stationary bike',vo:[4.8,5.8,6.8][e]*3.5,main:`About ${wt} W (resistance ${[4,6,8][e]}) · 70–80 rpm`,tip:'Joint-friendly; seat at hip height.'})}}
-else{const sp=lowImpact?5:[5.5,6,6.3][e];
+else{const wt=gentle?50:[60,80,100][e];P.push({n:'Stationary bike',vo:(gentle?4:[4.8,5.8,6.8][e])*3.5,main:`About ${wt} W (resistance ${gentle?3:[4,6,8][e]}) · 70–80 rpm`,tip:'Joint-friendly; seat at hip height.'})}}
+else{const sp=gentle?4.5:lowImpact?5:[5.5,6,6.3][e];
 P.push({n:'Brisk walk',vo:vw(sp,0),main:`${sp} km/h · flat road`,tip:'Pace where talking is possible but singing isn\'t.'});
 if(!lowImpact){const I=[[8,1,5,2],[9,2,5.5,1],[10,3,6,1]][e];P.push({n:'Run–walk',vo:(vr(I[0],0)*I[1]+vw(I[2],0)*I[3])/(I[1]+I[3]),main:`Run ${I[1]} min at ~${I[0]} km/h, walk ${I[3]} min`,tip:'Slow enough to breathe through your nose on walk breaks.'})}
-else P.push({n:'Hill or stair walk',vo:vw(4.5,8),main:'4–5 km/h on a slope, or stairs at a steady pace',tip:'Use a railing on stairs; go down slowly.'})}
+else if(!has('knee'))P.push({n:'Hill or stair walk',vo:vw(4.5,8),main:'4–5 km/h on a slope, or stairs at a steady pace',tip:'Use a railing on stairs; go down slowly.'});
+else P.push({n:'Easy cycling',vo:5*3.5,main:'Flat road or stationary cycle, easy gear · 30–40 min',tip:'Knee-friendly: no standing on the pedals.'})}
 const sess=(p,M,w=true)=>{const mm=M-(w?8:0);return{g:Math.round((w?8*gross(warm):0)+mm*gross(p.vo)),n:Math.round((w?8*net(warm):0)+mm*net(p.vo)),mm}};
 const rot=[];for(let i=0;i<cDays;i++)rot.push(P[i%P.length]);
 const finP=P[0],finS=sess(finP,fin,false);
-const netWeek=rot.reduce((t,p)=>t+sess(p,per).n,0)+days*(fin?finS.n:0);
-const grossWeek=rot.reduce((t,p)=>t+sess(p,per).g,0)+days*(fin?finS.g:0);
-const lift=Math.round([3.5,4.5,5][e]*3.5*W/200*(sMin-fin));
-return{rec:days,days,cardioMin,steps,lowImpact,fin,per,cDays,sMin,weekMin,P,rot,sess,finP,finS,netWeek,grossWeek,lift,walkNet:net(vw(5.5,0)),walkGross:gross(vw(5.5,0))}}
+const netWeek=rot.reduce((s,p)=>s+sess(p,per).n,0)+days*(fin?finS.n:0);
+const grossWeek=rot.reduce((s,p)=>s+sess(p,per).g,0)+days*(fin?finS.g:0);
+const lift=Math.round((gentle?3:[3.5,4.5,5][e])*3.5*W/200*(sMin-fin));
+return{days,cardioMin,steps,lowImpact,gentle,fin,per,cDays,sMin,weekMin,P,rot,sess,finP,finS,netWeek,grossWeek,lift,walkNet:net(vw(5.5,0)),walkGross:gross(vw(5.5,0))}}
 
-/* ---------- foods: per 100 g/ml or per piece; price in ₹ ---------- */
+/* =================== foods: [name, unit, kcal, protein, carb, fat, ₹ per unit-base, step, piece names] =================== */
 const F={
-roti:['Roti (whole wheat)','pc',110,3.5,22,.6,3,1,['roti','rotis']],
+roti:['Roti (whole wheat)','pc',95,3.2,19,.6,3,1,['roti','rotis']],
+rotli:['Rotli / bhakri','pc',95,3.2,19,.6,3,1,['rotli','rotlis']],
+millet:['Bajra or jowar roti','pc',100,3,20,1.3,4,1,['roti','rotis']],
 rice:['Rice (cooked)','g',130,2.7,28,.3,4,25],
+idli:['Idli','pc',58,2,12,.4,4,1,['idli','idlis']],
+dosa:['Plain dosa (home, little oil)','pc',120,3,18,4,8,1,['dosa','dosas']],
 oats:['Oats','g',389,13,66,7,18,10],
 poha:['Poha (dry)','g',350,7,77,1,6,10],
 dal:['Dal: toor or moong (dry)','g',345,24,58,1.5,14,10],
@@ -369,7 +677,9 @@ paneer:['Paneer','g',265,18,4,21,42,10],
 tofu:['Tofu (firm)','g',140,15,3,8,25,25],
 curd:['Curd (dahi)','g',60,3.5,4.7,3,6,50],
 milk:['Toned milk','ml',58,3.1,4.7,3,5.6,50],
+soymilk:['Soy milk (fortified)','ml',45,3.3,3,2,12,50],
 whey:['Whey protein','pc',120,24,3,1.5,75,1,['scoop','scoops']],
+plant:['Plant protein (pea/soy)','pc',115,22,3,2,80,1,['scoop','scoops']],
 egg:['Whole eggs','pc',72,6.3,.4,5,7,1,['egg','eggs']],
 chicken:['Chicken breast (raw)','g',120,23,0,2.6,30,25],
 fish:['Fish: rohu or basa (raw)','g',110,19,0,3.5,28,25],
@@ -378,143 +688,298 @@ sabzi:['Vegetable sabzi','g',70,2,8,3.5,5,50],
 salad:['Salad: cucumber, tomato, onion','g',25,1,5,.2,4,50],
 banana:['Banana','pc',105,1.3,27,.4,6,1,['banana','bananas']],
 fruit:['Seasonal fruit','g',55,.5,14,.2,12,50],
+dates:['Dates (khajur)','pc',23,.2,6,0,4,1,['date','dates']],
 oil:['Oil or ghee for cooking','pc',45,0,0,5,1.2,1,['tsp','tsp']],
 sprouts:['Moong sprouts','g',105,7.5,18,.5,10,25],
 besan:['Besan chilla (besan, dry)','g',387,22,58,6.7,10,10],
 almonds:['Almonds','g',579,21,22,50,100,5],
-bread:['Brown bread','pc',70,3,12,1,4,1,['slice','slices']]};
-const B='Breakfast',L='Lunch',SN='Evening snack',D='Dinner',O='Cooking fat (whole day)';
-const T={
-'veg-low':[[B,'poha:60:c peanuts:15:x milk:200:p'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c soya:30:p sabzi:150:x'],[O,'oil:4:x']],
-'veg-mid':[[B,'besan:50:p curd:100:p fruit:100:x'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'sprouts:100:p milk:200:p'],[D,'roti:2:c paneer:50:p soya:25:p sabzi:150:x'],[O,'oil:3:x']],
-'veg-high':[[B,'oats:50:c milk:250:p whey:1:p fruit:100:x almonds:15:x'],[L,'roti:2:c rice:100:c dal:40:p sabzi:150:x salad:150:x curd:150:p'],[SN,'sprouts:100:p fruit:100:x'],[D,'roti:2:c tofu:150:p paneer:50:p sabzi:150:x'],[O,'oil:3:x']],
-'egg-low':[[B,'bread:2:c egg:2:p milk:150:p'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:100:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c egg:2:p soya:20:p sabzi:150:x'],[O,'oil:4:x']],
-'egg-mid':[[B,'egg:3:p bread:2:c fruit:100:x'],[L,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'sprouts:100:p milk:200:p'],[D,'roti:2:c paneer:80:p sabzi:150:x'],[O,'oil:3:x']],
-'egg-high':[[B,'oats:50:c milk:250:p egg:3:p fruit:100:x almonds:15:x'],[L,'roti:2:c rice:100:c dal:40:p sabzi:150:x salad:150:x curd:150:p'],[SN,'whey:1:p fruit:100:x'],[D,'roti:2:c tofu:150:p egg:2:p sabzi:150:x'],[O,'oil:3:x']],
-'non-low':[[B,'bread:2:c egg:2:p milk:150:p'],[L,'rice:150:c roti:1:c dal:30:p soya:20:p sabzi:150:x curd:100:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c chicken:75:p sabzi:150:x'],[O,'oil:4:x']],
-'non-mid':[[B,'egg:3:p bread:2:c fruit:100:x'],[L,'rice:150:c dal:30:p chicken:120:p sabzi:100:x salad:100:x'],[SN,'curd:200:p fruit:100:x'],[D,'roti:2:c fish:150:p sabzi:150:x'],[O,'oil:3:x']],
-'non-high':[[B,'oats:50:c milk:250:p egg:3:p almonds:15:x'],[L,'rice:150:c chicken:150:p sabzi:150:x salad:150:x curd:150:p'],[SN,'whey:1:p fruit:100:x'],[D,'roti:2:c fish:150:p salad:100:x sabzi:100:x'],[O,'oil:3:x']]};
+bread:['Brown bread','pc',70,3,12,1,4,1,['slice','slices']],
+sabudana:['Sabudana (dry)','g',350,.2,87,.2,12,10],
+kuttu:['Kuttu or singhara atta','g',340,12,70,3,20,10],
+makhana:['Makhana (roasted)','g',350,9.7,77,.1,80,10],
+potato:['Potato (boiled)','g',87,1.9,20,.1,3,50]};
+const FH={roti:'रोटी (गेहूँ)',rotli:'रोटली / भाखरी',millet:'बाजरा या ज्वार रोटी',rice:'चावल (पका)',idli:'इडली',dosa:'सादा डोसा (घर का, कम तेल)',oats:'ओट्स',poha:'पोहा (सूखा)',dal:'दाल: तूर या मूँग (सूखी)',rchana:'भुना चना',soya:'सोया चंक्स (सूखे)',paneer:'पनीर',tofu:'टोफ़ू',curd:'दही',milk:'टोंड दूध',soymilk:'सोया दूध (फ़ोर्टिफ़ाइड)',whey:'Whey प्रोटीन',plant:'प्लांट प्रोटीन (मटर/सोया)',egg:'पूरे अंडे',chicken:'चिकन ब्रेस्ट (कच्चा)',fish:'मछली: रोहू या बासा (कच्ची)',peanuts:'मूँगफली',sabzi:'सब्ज़ी',salad:'सलाद: खीरा, टमाटर, प्याज़',banana:'केला',fruit:'मौसमी फल',dates:'खजूर',oil:'तेल या घी (पकाने में)',sprouts:'मूँग स्प्राउट्स',besan:'बेसन चीला (बेसन, सूखा)',almonds:'बादाम',bread:'ब्राउन ब्रेड',sabudana:'साबूदाना (सूखा)',kuttu:'कुट्टू या सिंघाड़ा आटा',makhana:'मखाना (भुना)',potato:'आलू (उबला)'};
+const UH={roti:['रोटी','रोटी'],rotli:['रोटली','रोटली'],millet:['रोटी','रोटी'],idli:['इडली','इडली'],dosa:['डोसा','डोसे'],whey:['स्कूप','स्कूप'],plant:['स्कूप','स्कूप'],egg:['अंडा','अंडे'],banana:['केला','केले'],dates:['खजूर','खजूर'],oil:['चम्मच','चम्मच'],bread:['स्लाइस','स्लाइस']};
+const fname=k=>{let n=S.lang==='hi'?FH[k]:F[k][0];if(S.restr==='jain'){if(k==='salad')n=S.lang==='hi'?'सलाद: खीरा, टमाटर (प्याज़ नहीं)':'Salad: cucumber, tomato (no onion)';if(k==='sabzi')n=S.lang==='hi'?'सब्ज़ी (बिना प्याज़-लहसुन-आलू)':'Vegetable sabzi (no onion, garlic, potato)'}if(S.cuisine==='south'&&k==='dal')n=S.lang==='hi'?'तूर दाल – सांभर/रसम (सूखी)':'Toor dal for sambar / rasam (dry)';if(S.cuisine==='east'&&k==='poha')n=S.lang==='hi'?'चिड़वा / पोहा (सूखा)':'Chira / poha (dry)';return n};
+const B='B',Lu='L',SN='SN',D='D',O='O';
+const TPL={
+'veg-low':[[B,'poha:60:c peanuts:15:x milk:200:p'],[Lu,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c soya:30:p sabzi:150:x'],[O,'oil:4:x']],
+'veg-mid':[[B,'besan:50:p curd:100:p fruit:100:x'],[Lu,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'sprouts:100:p milk:200:p'],[D,'roti:2:c paneer:50:p soya:25:p sabzi:150:x'],[O,'oil:3:x']],
+'veg-high':[[B,'oats:50:c milk:250:p whey:1:p fruit:100:x almonds:15:x'],[Lu,'roti:2:c rice:100:c dal:40:p sabzi:150:x salad:150:x curd:150:p'],[SN,'sprouts:100:p fruit:100:x'],[D,'roti:2:c tofu:150:p paneer:50:p sabzi:150:x'],[O,'oil:3:x']],
+'egg-low':[[B,'bread:2:c egg:2:p milk:150:p'],[Lu,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:100:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c egg:2:p soya:20:p sabzi:150:x'],[O,'oil:4:x']],
+'egg-mid':[[B,'egg:3:p bread:2:c fruit:100:x'],[Lu,'roti:3:c dal:30:p soya:20:p sabzi:150:x salad:100:x curd:150:p'],[SN,'sprouts:100:p milk:200:p'],[D,'roti:2:c paneer:80:p sabzi:150:x'],[O,'oil:3:x']],
+'egg-high':[[B,'oats:50:c milk:250:p egg:3:p fruit:100:x almonds:15:x'],[Lu,'roti:2:c rice:100:c dal:40:p sabzi:150:x salad:150:x curd:150:p'],[SN,'whey:1:p fruit:100:x'],[D,'roti:2:c tofu:150:p egg:2:p sabzi:150:x'],[O,'oil:3:x']],
+'non-low':[[B,'bread:2:c egg:2:p milk:150:p'],[Lu,'rice:150:c roti:1:c dal:30:p soya:20:p sabzi:150:x curd:100:p'],[SN,'rchana:30:p banana:1:x'],[D,'roti:2:c chicken:75:p sabzi:150:x'],[O,'oil:4:x']],
+'non-mid':[[B,'egg:3:p bread:2:c fruit:100:x'],[Lu,'rice:150:c dal:30:p chicken:120:p sabzi:100:x salad:100:x'],[SN,'curd:200:p fruit:100:x'],[D,'roti:2:c fish:150:p sabzi:150:x'],[O,'oil:3:x']],
+'non-high':[[B,'oats:50:c milk:250:p egg:3:p almonds:15:x'],[Lu,'rice:150:c chicken:150:p sabzi:150:x salad:150:x curd:150:p'],[SN,'whey:1:p fruit:100:x'],[D,'roti:2:c fish:150:p salad:100:x sabzi:100:x'],[O,'oil:3:x']]};
+const VRAT={low:[['VB','sabudana:50:c peanuts:20:x curd:150:p'],['VL','kuttu:60:c potato:150:x curd:150:p'],['VS','makhana:20:x fruit:150:x'],['VD','milk:250:p paneer:50:p fruit:100:x'],[O,'oil:3:x']],
+mid:[['VB','sabudana:50:c peanuts:20:x curd:150:p'],['VL','kuttu:60:c paneer:80:p sabzi:150:x curd:150:p'],['VS','makhana:25:x fruit:150:x'],['VD','milk:250:p paneer:60:p fruit:100:x'],[O,'oil:3:x']],
+high:[['VB','sabudana:50:c almonds:15:x milk:250:p'],['VL','kuttu:60:c paneer:100:p sabzi:150:x curd:150:p'],['VS','makhana:30:x fruit:150:x'],['VD','milk:250:p paneer:80:p fruit:100:x'],[O,'oil:3:x']]};
 const per=(k,q)=>F[k][1]==='pc'?q:q/100;
-function plan(c){
-const meals=T[S.diet+'-'+S.bud].map(([n,s])=>[n,s.split(' ').map(t=>{const[k,q,r]=t.split(':');return{k,q:+q,r}})]);
+const PG=['soya','dal','paneer','tofu','curd','milk','soymilk','egg','chicken','fish','whey','plant','sprouts','rchana','besan'];
+const CG=['roti','rotli','millet','rice','idli','dosa','bread','oats','poha'];
+function allowed(k){
+const d=S.restr==='jain'?'veg':S.diet;
+if(d==='veg'&&['egg','chicken','fish'].includes(k))return false;
+if(d==='egg'&&['chicken','fish'].includes(k))return false;
+if(S.restr==='dairyfree'&&['paneer','curd','milk','whey'].includes(k))return false;
+if(S.restr==='jain'&&['potato'].includes(k))return false;
+return true}
+function convert(x,to){const fr=x.k,isP=x.r==='p';const keyIdx=isP?3:2;const amt=F[fr][keyIdx]*per(fr,x.q);const unit=F[to][keyIdx]*(F[to][1]==='pc'?1:.01);const st=F[to][7];x.k=to;x.q=Math.max(st,Math.round(amt/unit/st)*st)}
+function transform(meals){
+/* cuisine */
+const cuis={south:{B:{poha:'idli',bread:'idli'},L:{roti:'rice'},D:{roti:'dosa'}},east:{L:{roti:'rice'}},west:{B:{},L:{roti:'rotli'},D:{roti:'rotli'}}}[S.cuisine]||{};
+for(const[n,items]of meals){const map=cuis[n];if(!map)continue;for(const x of items)if(map[x.k])convert(x,map[x.k])}
+/* merge duplicate rice etc */
+for(const m of meals){const seen={};m[1]=m[1].filter(x=>{if(seen[x.k]){seen[x.k].q+=x.q;return false}seen[x.k]=x;return true})}
+/* restrictions */
+for(const[,items]of meals)for(const x of items){
+if(S.restr==='dairyfree'){if(x.k==='milk')convert(x,'soymilk');else if(x.k==='curd')convert(x,'soymilk');else if(x.k==='paneer')convert(x,'tofu');else if(x.k==='whey')convert(x,'plant')}
+if(!allowed(x.k)){const alt=x.r==='p'?PG.find(a=>allowed(a)&&a!==x.k&&a!=='dal'):CG.find(a=>allowed(a));if(alt)convert(x,alt)}}
+/* user swaps */
+for(const[,items]of meals)for(const x of items){x.o=x.o||x.k;const to=S.swaps[x.o];if(to&&to!==x.k&&allowed(to))convert(x,to)}
+for(const m of meals){const seen={};m[1]=m[1].filter(x=>{if(seen[x.k]){seen[x.k].q+=x.q;return false}seen[x.k]=x;return true})}
+return meals}
+function buildMeals(tpl){return tpl.map(([n,s])=>[n,s.split(' ').map(tk=>{const[k,q,r]=tk.split(':');return{k,q:+q,r,o:k}})])}
+function plan(c,vrat){
+let meals=transform(buildMeals(vrat?VRAT[S.bud]:TPL[(S.restr==='jain'&&S.diet!=='veg'?'veg':S.diet)+'-'+S.bud]));
 const all=meals.flatMap(m=>m[1]);
 const fx=clamp(c.kcal/2000,.55,1);for(const x of all)if(x.r==='x'){const st=F[x.k][7];x.q=Math.max(st,Math.round(x.q*fx/st)*st)}
-const sum=(role,i,mult)=>all.filter(x=>!role||x.r===role).reduce((t,x)=>t+F[x.k][i]*per(x.k,x.q*(mult?mult(x):1)),0);
-let a=1,b=1;
-for(let i=0;i<8;i++){a=clamp((c.protein-sum('x',3)-b*sum('c',3))/sum('p',3),.4,2.4);b=clamp((c.kcal-sum('x',2)-a*sum('p',2))/sum('c',2),.35,2.6);if(sum('x',2)+a*sum('p',2)+b*sum('c',2)>c.kcal*1.03)a=clamp((c.kcal*1.03-sum('x',2)-b*sum('c',2))/sum('p',2),.4,a)}
+const sum=(role,i)=>all.filter(x=>!role||x.r===role).reduce((s,x)=>s+F[x.k][i]*per(x.k,x.q),0);
+let a=1,b=1;const sp=sum('p',3)||1,sc=sum('c',3);
+for(let i=0;i<8;i++){a=clamp((c.protein-sum('x',3)-b*sc)/sp,.4,2.6);b=clamp((c.kcal-sum('x',2)-a*sum('p',2))/(sum('c',2)||1),.35,2.6);if(sum('x',2)+a*sum('p',2)+b*sum('c',2)>c.kcal*1.03)a=clamp((c.kcal*1.03-sum('x',2)-b*sum('c',2))/(sum('p',2)||1),.4,a)}
 for(const x of all){const st=F[x.k][7],m=x.r==='p'?a:x.r==='c'?b:1;x.q=Math.max(st,Math.round(x.q*m/st)*st)}
-for(const m of meals){const r=m[1].find(x=>x.k==='rice'),ro=m[1].find(x=>x.k==='roti');if(r&&ro&&r.q<75){const k=F.rice[2]*r.q/100;r.q=0;ro.q+=Math.max(0,Math.round(k/F.roti[2]))}}
-const tot=i=>sum(null,i);
-/* keep inside the chosen budget: trim the costliest protein foods, refill protein with soya */
+for(const m of meals){const r=m[1].find(x=>x.k==='rice'),ro=m[1].find(x=>['roti','rotli','millet'].includes(x.k));if(r&&ro&&r.q<75){const k=F.rice[2]*r.q/100;r.q=0;ro.q+=Math.max(0,Math.round(k/F[ro.k][2]))}}
+const tot=i=>all.reduce((s,x)=>s+F[x.k][i]*per(x.k,x.q),0);
+if(!vrat){
 const cap={low:3000,mid:5000,high:7000}[S.bud]/30*.98;
-const keep=['soya','dal','roti','rice','sabzi','salad','oil','poha','bread','oats','besan','rchana'];
+const keep=['soya','dal','roti','rotli','millet','rice','idli','dosa','sabzi','salad','oil','poha','bread','oats','besan','rchana'];
 let soy=all.find(x=>x.k==='soya');
 for(let i=0;i<80&&tot(6)>cap;i++){
-const c2=all.filter(x=>!keep.includes(x.k)&&x.q>F[x.k][7]);if(!c2.length)break;
+const c2=all.filter(x=>!keep.includes(x.k)&&x.q>F[x.k][7]&&x.r!=='x');if(!c2.length)break;
 const ppp=x=>F[x.k][6]/(F[x.k][3]+.01);c2.sort((u,v)=>ppp(v)-ppp(u));
 const x=c2[0],st=F[x.k][7],lost=F[x.k][3]*per(x.k,st);x.q-=st;
-if(!soy){soy={k:'soya',q:0,r:'p'};meals.find(m=>m[0]===D)[1].push(soy);all.push(soy)}
-soy.q=Math.round((soy.q+lost/0.52)/5)*5}
+if(!soy){soy={k:'soya',q:0,r:'p',o:'soya'};meals.find(m=>m[0]===D)[1].push(soy);all.push(soy)}
+soy.q=Math.round((soy.q+lost/0.52)/5)*5}}
 for(const m of meals)m[1]=m[1].filter(x=>x.q>0);
-for(const m of meals)m[1]=m[1].filter(x=>x.q>0);
-return{meals,k:tot(2),p:tot(3),c:tot(4),f:tot(5),cost:tot(6),cap:cap*30/.98}}
-const qty=(k,q)=>{const u=F[k][1];return u==='pc'?`${q} ${F[k][8][q===1?0:1]}`:`${q} ${u}`};
+const cap=({low:3000,mid:5000,high:7000})[S.bud];
+return{meals,k:tot(2),p:tot(3),c:tot(4),f:tot(5),cost:tot(6),cap}}
+function pattern(meals){
+if(S.fast==='ramadan'){const lab={B:'SE',SN:'IF',L:'RD',D:'RL'};const sn=meals.find(m=>m[0]===SN);if(sn&&!sn[1].some(x=>x.k==='dates'))sn[1].unshift({k:'dates',q:3,r:'x',o:'dates'});return meals.map(([n,it])=>[lab[n]||n,it])}
+if(S.pat==='two'){const g=k=>meals.find(m=>m[0]===k);const br=[...(g(B)||[,[]])[1],...(g(Lu)||[,[]])[1]],ds=[...(g(D)||[,[]])[1],...(g(SN)||[,[]])[1]];return[['BR',br],['DS',ds],...meals.filter(m=>m[0]===O)]}
+if(S.pat==='night'){const lab={B:'N1',L:'N2',D:'N3',SN:'N4'},ord=['N1','N2','N3','N4','O'];return meals.map(([n,it])=>[lab[n]||n,it]).sort((a,b)=>ord.indexOf(a[0])-ord.indexOf(b[0]))}
+return meals}
+const qty=(k,q)=>{const u=F[k][1];if(u!=='pc')return `${q} ${u}`;if(S.lang==='hi'&&UH[k])return `${q} ${UH[k][q===1?0:1]}`;return `${q} ${F[k][8][q===1?0:1]}`};
 
-/* ---------- render ---------- */
+/* =================== progress log =================== */
+const today=()=>new Date().toISOString().slice(0,10);
+function saveLog(){try{localStorage.setItem('bodycheck-log',JSON.stringify(LOG))}catch(e){}}
+function trend(){
+const E=LOG.filter(e=>!S.adjDate||e.d>=S.adjDate);
+if(E.length<2)return{slopeWeek:0,span:E.length?0:0,n:E.length};
+const pts=E.map(e=>[(new Date(e.d)-new Date(E[0].d))/864e5,e.w]);
+const span=pts[pts.length-1][0];
+const n=pts.length,mx=pts.reduce((s,p)=>s+p[0],0)/n,my=pts.reduce((s,p)=>s+p[1],0)/n;
+const sxx=pts.reduce((s,p)=>s+(p[0]-mx)**2,0);if(!sxx)return{slopeWeek:0,span:0,n};
+const slope=pts.reduce((s,p)=>s+(p[0]-mx)*(p[1]-my),0)/sxx;
+return{slopeWeek:slope*7,span,n}}
+function renderProgress(c,wo){
+$('logWL').textContent=t('logW',imp()?'lb':'kg');
+if(!$('logDate').value)$('logDate').value=today();
+/* list */
+$('logList').innerHTML=LOG.length?`<table class="tt"><thead><tr><th>${t('date')}</th><th>${t('weight')}</th><th>${t('waistOpt').split(' (')[0]}</th><th></th></tr></thead><tbody>${[...LOG].map((e,i)=>[e,i]).reverse().map(([e,i])=>`<tr><td>${e.d}</td><td>${Wt(e.w)}</td><td>${e.waist?e.waist+' cm':'–'}</td><td><button type="button" class="linkbtn" data-del="${i}">${t('logDel')}</button></td></tr>`).join('')}</tbody></table>`:`<p class="note">${t('logEmpty')}</p>`;
+/* chart */
+const planRate=c.goal==='lose'?-c.pace:c.goal==='gain'?.25:0;
+if(LOG.length){
+const d0=new Date(LOG[0].d),days=LOG.map(e=>(new Date(e.d)-d0)/864e5),maxD=Math.max(28,days[days.length-1]+7);
+const planW=x=>LOG[0].w+planRate*x/7;
+const ws=LOG.map(e=>e.w).concat([planW(0),planW(maxD)]);const lo=Math.min(...ws)-1,hi=Math.max(...ws)+1;
+const X=x=>40+x/maxD*540,Y=w=>20+(hi-w)/(hi-lo)*180;
+const cv=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const grid=[0,.5,1].map(f=>{const w=lo+(hi-lo)*f;return `<line x1="40" x2="580" y1="${Y(w)}" y2="${Y(w)}" stroke="${cv('--line')}"/><text x="4" y="${Y(w)+4}" font-size="11" fill="${cv('--mut')}">${imp()?(w*2.20462).toFixed(0):w.toFixed(1)}</text>`}).join('');
+const path=LOG.map((e,i)=>`${i?'L':'M'}${X(days[i]).toFixed(1)},${Y(e.w).toFixed(1)}`).join(' ');
+$('chart').innerHTML=`<svg class="chart" viewBox="0 0 600 230" role="img" aria-label="${t('chartLeg')}">${grid}<line x1="${X(0)}" y1="${Y(planW(0))}" x2="${X(maxD)}" y2="${Y(planW(maxD))}" stroke="${cv('--fig')}" stroke-width="2" stroke-dasharray="6 6"/><path d="${path}" fill="none" stroke="#ff6b2c" stroke-width="3"/>${LOG.map((e,i)=>`<circle cx="${X(days[i])}" cy="${Y(e.w)}" r="4" fill="#ff6b2c"/>`).join('')}<text x="40" y="222" font-size="11" fill="${cv('--mut')}">${LOG[0].d}</text><text x="580" y="222" font-size="11" text-anchor="end" fill="${cv('--mut')}">+${Math.round(maxD)}d</text></svg><p class="note">${t('chartLeg')}</p>`}
+else $('chart').innerHTML='';
+/* adaptive check */
+const tr=trend();let html='';
+if(tr.span<14||tr.n<3)html=`<p>${t('adaptWait',tr.n,Math.round(tr.span))}</p>`;
+else{
+const a=tr.slopeWeek,gap=a-planRate,tol=Math.max(.1,Math.abs(planRate)*.25);
+const ra=(a>0?'+':'')+Rate(+a.toFixed(2)),rp=(planRate>0?'+':'')+Rate(+planRate.toFixed(2));
+if(Math.abs(gap)<=tol)html=`<p>${t('adaptOk',ra,rp)}</p>`;
+else{
+let ch=clamp(Math.round(Math.abs(gap)*7700/7/10)*10,50,300);
+const slower=gap>0&&c.goal!=='gain'||gap<0&&c.goal==='gain'&&false;
+const lessFood=gap>0;
+let nk=c.kcal+(lessFood?-ch:ch),walkMin=0;
+if(lessFood&&nk<c.floor){walkMin=r5((c.floor-nk)/wo.walkNet);nk=c.floor;ch=c.kcal-nk}
+html=`<p>${ch>0?(lessFood?t('adaptSlow',ra,rp,ch,fmt(nk)):t('adaptFast',ra,rp,ch,fmt(nk))):t('adaptSlowWalk',ra,rp)}${walkMin?t('adaptFloor',walkMin):''}</p><div class="btns"><button type="button" class="btn" id="applyAdj" data-v="${lessFood?-ch:ch}" data-w="${walkMin}">${t('adaptApply')}</button></div>`;
+void slower}}
+const last=LOG[LOG.length-1];
+if(last&&Math.abs(last.w-c.w)>.2)html+=`<div class="btns"><button type="button" class="btn ghost" id="useLatest">${t('adaptUpdate',Wt(last.w))}</button></div>`;
+if(S.kAdj||S.walkAdj)html+=`<p class="note" style="margin-top:8px">${t('adaptNow',S.kAdj,S.walkAdj)} <button type="button" class="linkbtn" id="resetAdj">${t('adaptReset')}</button></p>`;
+$('adapt').innerHTML=LOG.length?`<div class="adapt">${html}</div>`:''}
+
+/* =================== coach / share =================== */
+function coach(){return URLCOACH||COACH}
+function renderBrand(c){
+const co=coach();
+$('brand').innerHTML=co&&co.name?`${co.logo?`<img src="${esc(co.logo)}" alt="">`:''}<span>${esc(co.name)}</span>`:'';
+if(co&&co.name&&co.wa){
+const msg=t('waMsgCoach',co.name,c.bf.toFixed(1),t('goalN')[c.goal],fmt(c.kcal),Wt(c.w));
+$('ctaBox').innerHTML=`<div class="cta"><div><h3>${esc(t('ctaT',co.name))}</h3><p>${t('ctaS')}</p></div><a href="https://wa.me/${esc(co.wa.replace(/\D/g,''))}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">💬 ${t('ctaB')}</a></div>`}
+else $('ctaBox').innerHTML='';
+const link=shareURL();
+$('waShare').href='https://wa.me/?text='+encodeURIComponent(t('shareTxt',c.bf.toFixed(1),fmt(c.kcal),c.protein,c.days)+link)}
+function shareURL(){const u=new URL(location.href.split('#')[0]);const co=coach();u.search='';if(co&&co.name){u.searchParams.set('coach',co.name);if(co.wa)u.searchParams.set('wa',co.wa.replace(/\D/g,''));if(co.logo&&!co.logo.startsWith('data:'))u.searchParams.set('logo',co.logo)}if(S.lang==='hi')u.searchParams.set('lang','hi');return u.toString()}
+
+/* =================== render =================== */
 function render(){
+applyStatic();
 const c=calc(),cs=getComputedStyle(document.documentElement);
-const wo=workout(c);energy(c,wo);
-/* pace control */
-$('paceBox').querySelector('.seg').style.display=c.goal==='lose'?'':'none';
-$('paceSeg').querySelectorAll('button').forEach(b=>{const v=+b.dataset.v;b.setAttribute('aria-pressed',v===c.pace);b.className='pbtn';b.innerHTML=`${v} kg${v===c.sug?'<small>suggested</small>':''}`});
-$('paceNote').innerHTML=c.goal!=='lose'?'Pace applies when the goal is fat loss.':(c.pace>c.limit+.001?`<b>Fast:</b> more than 1% of your body weight a week (${c.limit.toFixed(2)} kg). Expect hunger and some muscle loss; ${c.sug} kg is the suggested pace. `:'')+(c.extraWalk?`Food can't safely go below ${fmt(c.floor)} kcal, so this pace also needs <b>${c.extraWalk} min of extra brisk walking a day</b>.${c.extraWalk>45?' That is hard to keep up; a slower pace will likely get you there sooner overall.':''}`:`Eat ${fmt(c.kcal)} kcal a day; cardio covers the rest of the deficit.`);
+const wo=workout(c);energy(c,wo);c.days=wo.days;
+/* units */
+$('htM').classList.toggle('hidden',imp());$('htI').classList.toggle('hidden',!imp());$('wU').textContent=imp()?'lb':'kg';
+$('ftTxt').textContent=imp()?`(${Math.round(c.h)} cm)`:`(${Math.floor(c.h/30.48)}′${Math.round(c.h/2.54%12)}″)`;
+/* health checkboxes */
+const conds=['preg','bf','diab','bp','heart','thy','pcos','knee','back'].filter(k=>c.m?!['preg','bf','pcos'].includes(k):true);
+S.cond=S.cond.filter(k=>conds.includes(k));
+$('conds').innerHTML=conds.map(k=>`<label><input type="checkbox" data-cond="${k}" ${has(k)?'checked':''}> ${t('cond')[k]}</label>`).join('');
+/* pace */
+$('paceSeg').style.display=c.goal==='lose'?'':'none';
+$('paceSeg').querySelectorAll('button').forEach(b=>{const v=+b.dataset.v;b.setAttribute('aria-pressed',v===c.pace);b.className='pbtn';b.disabled=v>c.capPace;b.innerHTML=`${Rate(v)}${v===c.sug?`<small>${t('suggested')}</small>`:''}`});
+$('paceNote').innerHTML=c.goal!=='lose'?t('paceNoLose'):(c.capPace<1&&(S.pace>c.capPace||c.capped)?t('paceCap',Rate(c.capPace)):'')+(c.pace>c.limit+.001?t('paceFast',Rate(+c.limit.toFixed(2)),Rate(c.sug)):'')+(c.extraWalk?t('paceWalk',fmt(c.floor),c.extraWalk)+(c.extraWalk>45?t('paceWalkHard'):''):t('paceEat',fmt(c.kcal)));
 const fig=cs.getPropertyValue('--fig').trim()||'#2433a8';
-$('ftTxt').textContent=`(${Math.floor(c.h/30.48)}′${Math.round(c.h/2.54%12)}″)`;
 $('hipL').style.display=c.m?'none':'';
 $('heroFig').innerHTML=figure(c.sex,c.bf,'gh','#ff6b2c','#ffd2bd');
-$('bfBig').innerHTML=`${c.bf.toFixed(1)}<small>% body fat</small>`;
-$('bfCat').textContent=cat(c.sex,c.bf,c.age);
+$('bfBig').innerHTML=`${c.bf.toFixed(1)}<small>${t('bodyFat')}</small>`;
+$('bfCat').textContent=catT(c.sex,c.bf,c.age);
 $('bfMethod').textContent=c.method;
-const gl={lose:'to lose fat',keep:'to maintain',gain:'to build muscle'}[c.goal];
-$('stats').innerHTML=[[c.bmi.toFixed(1),'BMI · '+bmiClass(c.bmi)],[c.fat.toFixed(1)+' kg','Fat mass'],[c.lbm.toFixed(1)+' kg','Lean mass (muscle, bone, water)'],[fmt(c.kcal)+' kcal','Eat per day '+gl]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+$('stats').innerHTML=[[c.bmi.toFixed(1),'BMI · '+t('bmi')[bmiClass(c.bmi)]],[Wt(c.fat),t('fatMass')],[Wt(c.lbm),t('lean')],[fmt(c.kcal)+' kcal',t('eat',c.goal)]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+
+/* alerts */
+const al=S.cond.map(k=>t('al')[k]).filter(Boolean).map((a,i)=>`<div class="alert${['preg','heart','diab'].includes(S.cond[i])?'':' am'}"><b>${a[0]}</b>${a[1]}</div>`).join('')+(c.age>=60&&c.exp===0?`<div class="alert am">${t('alOld')}</div>`:'');
+$('alerts').innerHTML=al;
 
 /* condition */
 const tW=c.lbm/(1-c.target/100),diff=c.w-tW,weeks=Math.abs(diff)/(c.goal==='lose'?c.pace:.25);
-const who=`${c.m?'men':'women'} your age (healthy: ${c.lowBF}–${c.hiBF}%)`,catTxt=cat(c.sex,c.bf,c.age);
-let s=`At <strong>${c.bf.toFixed(1)}% body fat</strong> you are in the <strong>${catTxt.toLowerCase()}</strong> group for ${who}. `;
-s+=c.goal==='lose'?`A healthy target is about ${c.target}%, which means losing roughly <strong>${diff.toFixed(1)} kg of fat</strong> (to about ${tW.toFixed(0)} kg) while keeping your muscle. At ${c.pace} kg a week that takes around ${Math.ceil(weeks)} weeks.`:c.goal==='gain'?`You have little fat to spare. The priority is gaining muscle with a small calorie surplus: aim for about ${(c.w*.0025).toFixed(2)} kg a week.`:`You are in a healthy range. The aim now is to keep fat steady while building strength and fitness.`;
-if(c.auto)s+=` The system picked <strong>${{lose:'fat loss',keep:'maintain and tone',gain:'muscle gain'}[c.goal]}</strong> as your goal.`;
+const who=c.m?t('whoM',c.lowBF,c.hiBF):t('whoF',c.lowBF,c.hiBF);
+let s=t('sum1',c.bf.toFixed(1),catT(c.sex,c.bf,c.age).toLowerCase(),who);
+s+=c.goal==='lose'?t('sumLose',c.target,Wt(diff),Wt0(tW),Rate(c.pace),Math.ceil(weeks)):c.goal==='gain'?t('sumGain',Rate(+(c.w*.0025).toFixed(2))):t('sumKeep');
+if(c.auto&&!c.pregLike)s+=t('sumAuto',c.goal);
 $('summary').innerHTML=s;
-const rate=c.goal==='lose'?c.pace+' kg/week loss':c.goal==='gain'?'≈0.25 kg/week gain':'steady';
-$('kv').innerHTML=[['BMI (Asian cut-offs)',c.bmi.toFixed(1)+' · '+bmiClass(c.bmi)],['Waist-to-height ratio',c.whtr?c.whtr.toFixed(2)+(c.whtr>=.6?' · high':c.whtr>=.5?' · raised':' · healthy'):'add waist above'],['Calories burned at rest (BMR)',fmt(c.bmr)+' kcal'],['Calories burned per day (no exercise)',fmt(c.tdee)+' kcal'],['Extra burned by cardio (above resting)',fmt(c.ex)+' kcal/day avg'],['Daily food target',fmt(c.kcal)+' kcal'],...(c.goal==='lose'?[['Deficit from food + cardio',fmt(c.dietDef+c.ex+(c.extraWalk*wo.walkNet))+' kcal/day']]:[]),['Expected pace',rate]].map(([a,b])=>`<span>${a}</span><b>${b}</b>`).join('');
-/* projection */
+const rate=c.goal==='lose'?t('rateLose',Rate(c.pace)):c.goal==='gain'?t('rateGain',Rate(.25)):t('steady');
+$('kv').innerHTML=[[t('kvBmi'),c.bmi.toFixed(1)+' · '+t('bmi')[bmiClass(c.bmi)]],[t('kvWhtr'),c.whtr?c.whtr.toFixed(2)+(c.whtr>=.6?' · '+t('high'):c.whtr>=.5?' · '+t('raised'):' · '+t('healthy')):t('kvWhtrAdd')],[t('kvBmr'),fmt(c.bmr)+' kcal'],[t('kvTdee'),fmt(c.tdee)+' kcal'],[t('kvEx'),fmt(c.ex)+' kcal'+t('perDay')],[t('kvFood'),fmt(c.kcal)+' kcal'],...(c.goal==='lose'?[[t('kvDef'),fmt(c.dietDef+c.ex+(c.extraWalk*wo.walkNet))+' kcal/'+(S.lang==='hi'?'दिन':'day')]]:[]),[t('kvPace'),rate]].map(([a,b])=>`<span>${a}</span><b>${b}</b>`).join('');
 const step=c.goal==='lose'?-c.pace:c.goal==='gain'?.25:0,fatShare=c.goal==='gain'?.5:.9;
 const rows=[];for(let wk=0;wk<=52;wk+=4){let dw=step*wk;if(c.goal==='lose'&&c.w+dw<tW)dw=tW-c.w;const nw=c.w+dw,nf=Math.max(1,c.fat+dw*fatShare);rows.push([wk,nw,nf/nw*100]);if((c.goal==='lose'&&nw<=tW+.01)||rows.length>=7)break}
 const mx=Math.max(...rows.map(r=>r[1])),mn=Math.min(...rows.map(r=>r[1]))*.9;
-$('projNote').textContent=c.goal==='lose'?`At ${c.pace} kg a week, assuming you lift and hit your protein so most of the loss is fat. Weeks 1–2 often drop faster (water); later weeks slow a little.`:c.goal==='gain'?'Slow lean gain of about 0.25 kg a week; about half of it muscle for a beginner.':'Weight stays steady while body fat drifts down with training.';
-$('proj').innerHTML=step?rows.map(([wk,nw,b],i)=>`<div class="pr${i===rows.length-1&&c.goal==='lose'?' t':''}"><span>${wk?'Week '+wk:'Today'}</span><i style="width:${Math.max(8,(nw-mn)/(mx-mn)*100)}%"></i><b>${nw.toFixed(1)} kg · ${b.toFixed(1)}%</b></div>`).join(''):'';
+$('projNote').textContent=c.goal==='lose'?t('projLose',Rate(c.pace)):c.goal==='gain'?t('projGain'):t('projKeep');
+$('proj').innerHTML=step?rows.map(([wk,nw,b],i)=>`<div class="pr${i===rows.length-1&&c.goal==='lose'?' t':''}"><span>${wk?t('week')+' '+wk:t('today')}</span><i style="width:${Math.max(8,(nw-mn)/(mx-mn||1)*100)}%"></i><b>${Wt(nw)} · ${b.toFixed(1)}%</b></div>`).join(''):'';
 const col={Low:'var(--lo)',Moderate:'var(--md)',High:'var(--hi)'};
-$('risks').innerHTML=risks(c).map(r=>`<div class="risk"><h3>${r.n}</h3><div class="meter"><i style="width:${Math.max(6,r.s*100)}%;background:${col[r.l]}"></i></div><div class="lvl" style="color:${col[r.l]}">${r.l}</div><p>${r.why}</p></div>`).join('');
+$('risks').innerHTML=risks(c).map(r=>`<div class="risk"><h3>${r.n}</h3><div class="meter"><i style="width:${Math.max(6,r.s*100)}%;background:${col[r.l]}"></i></div><div class="lvl" style="color:${col[r.l]}">${t('lvl')[r.l]}</div><p>${r.why}</p></div>`).join('');
+
+renderProgress(c,wo);
 
 /* map */
 const minB=c.m?6:14,lv=[-15,-10,-5,0,5,10,15].map(d=>c.bf+d).filter(x=>x>=minB&&x<=55);
 $('map').innerHTML=lv.map((b,i)=>{const w=c.lbm/(1-b/100),d=w-c.w,cur=Math.abs(b-c.bf)<.01;const wk=Math.ceil(Math.abs(d)/(d<0?(c.pace||.5):.25));const healthy=b>=c.lowBF&&b<c.hiBF;
-return `<div class="mfig${cur?' cur':''}">${figure(c.sex,b,'mg'+i,cur?'#ff6b2c':fig,cur?'#ffd2bd':cs.getPropertyValue('--fig2').trim()||'#5866d6')}<b>${b.toFixed(0)}%</b><span>${w.toFixed(0)} kg${cur?'':` (${d>0?'+':''}${d.toFixed(0)} kg)`}</span><span>${cur?'You now':d<0?'~'+wk+' weeks':'if habits slip'}</span><em>${cur?'Current':healthy?'Healthy range':cat(c.sex,b,c.age)}</em></div>`}).join('');
+return `<div class="mfig${cur?' cur':''}">${figure(c.sex,b,'mg'+i,cur?'#ff6b2c':fig,cur?'#ffd2bd':cs.getPropertyValue('--fig2').trim()||'#5866d6')}<b>${b.toFixed(0)}%</b><span>${Wt0(w)}${cur?'':` (${d>0?'+':''}${imp()?Math.round(d*2.20462):d.toFixed(0)} ${imp()?'lb':'kg'})`}</span><span>${cur?t('youNow'):d<0?t('weeksT',wk):t('slip')}</span><em>${cur?t('current'):healthy?t('healthyRange'):catT(c.sex,b,c.age)}</em></div>`}).join('');
 requestAnimationFrame(()=>{const m=$('map'),el=m.querySelector('.cur');if(el)m.scrollLeft=el.offsetLeft-m.clientWidth/2+el.clientWidth/2});
 
 /* workout */
-const place=S.place,split=SPLIT[wo.days];
-$('woTitle').textContent=place==='gym'?`Workout plan: ${wo.days} gym days a week`:`Workout plan: ${wo.days} home strength days a week`;
-$('woSub').textContent=`Based on your ${['beginner','intermediate','experienced'][c.exp]} level, age and goal, ${c.goal==='lose'?`and a pace of ${c.pace} kg a week, `:''}you need about ${(wo.weekMin/60).toFixed(1)} hours a week: ${wo.days} strength sessions of ${wo.sMin} min and ${wo.cDays} cardio session${wo.cDays>1?'s':''} of ${wo.per} min. Fewer days slows results; more adds fatigue before it adds results. Cardio is ${wo.lowImpact?'kept low-impact to protect your joints':'a mix of incline walking, cross trainer and intervals'}.${c.extraWalk?` Plus ${c.extraWalk} min of extra brisk walking a day to hold your pace.`:''}`;
-$('woFigs').innerHTML=[[(wo.weekMin/60).toFixed(1)+' hrs','Exercise time per week'],[wo.days+' days','Strength training · '+wo.sMin+' min each'],[wo.cardioMin+' min','Cardio per week'],[fmt(wo.grossWeek)+' kcal','Burned by cardio per week'],[wo.steps.toLocaleString('en-IN'),'Steps per day']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
-const slots=SLOTS[wo.days];let ci=0;
+const place=S.place,split=SPLIT[wo.days],exPlace=place==='gym'?'gym':place==='equip'?'equip':'home';
+$('woTitle').textContent=place==='gym'?t('woTitleGym',wo.days):t('woTitleHome',wo.days);
+$('woSub').textContent=t('woSub',t('lvls')[c.exp],c.goal==='lose'?Rate(c.pace):'',(wo.weekMin/60).toFixed(1),wo.days,wo.sMin,wo.cDays,wo.per,wo.lowImpact,c.extraWalk);
+$('woFigs').innerHTML=[[(wo.weekMin/60).toFixed(1)+(S.lang==='hi'?' घंटे':' hrs'),t('figHrs')],[wo.days+' '+t('figDays'),t('figStr',wo.sMin)],[wo.cardioMin+(S.lang==='hi'?' मिनट':' min'),t('figCardio')],[fmt(wo.grossWeek)+' kcal',t('figBurn')],[wo.steps.toLocaleString('en-IN'),t('figSteps')]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+const slots=SLOTS[wo.days];let ci=0;const DAYS=t('days');
 $('week').innerHTML=DAYS.map((d,i)=>{const k=slots.indexOf(i);
 if(k>=0)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--fig)"></i>${split[k]}${wo.fin?` + ${wo.fin} min ${wo.finP.n.toLowerCase()}`:''}</span><span class="m">${wo.sMin} min · ~${fmt(wo.lift+(wo.fin?wo.finS.g:0))} kcal</span></li>`;
-if(i===6||ci>=wo.cDays)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--line)"></i>Rest: easy walk, stretching</span><span class="m">${(wo.steps*.7/1000).toFixed(0)}k steps</span></li>`;
+if(i===6||ci>=wo.cDays)return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--line)"></i>${t('rest')}</span><span class="m">${(wo.steps*.7/1000).toFixed(0)} ${t('kSteps')}</span></li>`;
 const pp=wo.rot[ci++];return `<li><span class="d">${d}</span><span class="t"><i class="tag" style="background:var(--acc)"></i>${pp.n}: ${pp.main}</span><span class="m">${wo.per} min · ~${fmt(wo.sess(pp,wo.per).g)} kcal</span></li>`}).join('');
-const card=pp=>{const x=wo.sess(pp,wo.per);return `<div class="card"><h3>${pp.n}</h3><ul class="set"><li><span>Warm-up 5 min</span><b>${pp.n.startsWith('Tread')?'4 km/h · 0%':pp.n==='Cross trainer'?'Level 3':pp.n==='Stationary bike'?'Light resistance':'Easy walk'}</b></li><li><span>Main ${x.mm} min</span><b>${pp.main}</b></li><li><span>Cool-down 3 min</span><b>easy pace</b></li></ul><p class="burn"><b>~${fmt(x.g)} kcal</b> in ${wo.per} min · ${Math.round(x.g/wo.per*10)} kcal per 10 min</p><p class="note">${pp.tip}</p></div>`};
+/* what fewer days would cost (the system still decides) */
+let fewer='';
+if(wo.days>2){const opts=[wo.days-1,wo.days-2].filter(d=>d>=2);
+if(c.goal==='lose'){const ratePer=w2=>(c.dietDef+w2.netWeek/7)*7/7700;const w0=ratePer(wo);
+fewer=`<div class="card" style="margin-top:16px"><h3>${t('fewerT',wo.days)}</h3><p class="note" style="margin-top:4px">${t('fewerSub')}</p><ul><li>${t('fewerNow',Rate(+w0.toFixed(2)),Math.ceil(Math.max(0,diff)/Math.max(.05,w0)))}</li>${opts.map(d=>{const w2=workout(c,d),r=ratePer(w2);void r;return `<li>${t('fewerRow',d,w2.per,wo.per,Math.round((1-d/wo.days)*100))}</li>`}).join('')}</ul></div>`}
+else fewer=`<div class="card" style="margin-top:16px"><h3>${t('fewerT',wo.days)}</h3><p class="note" style="margin-top:4px">${t('fewerSub')}</p><ul>${opts.map(d=>`<li>${t('fewerRowK',d,Math.round((1-d/wo.days)*100))}</li>`).join('')}</ul></div>`}
+$('fewer').innerHTML=fewer;
+const card=pp=>{const x=wo.sess(pp,wo.per);return `<div class="card"><h3>${pp.n}</h3><ul class="set"><li><span>${t('warm')}</span><b>${pp.n.startsWith('Tread')?'4 km/h · 0%':pp.n==='Cross trainer'?'Level 3':pp.n==='Stationary bike'?'Light resistance':'Easy walk'}</b></li><li><span>${t('main',x.mm)}</span><b>${pp.main}</b></li><li><span>${t('cool')}</span><b>${t('easy')}</b></li></ul><p class="burn"><b>~${fmt(x.g)} kcal</b> ${t('inMin',wo.per)} · ${Math.round(x.g/wo.per*10)} ${t('per10')}</p><p class="note">${pp.tip}</p></div>`};
 const eqWalk=r5(wo.sess(wo.P[0],wo.per).g/wo.walkGross);
-$('cardioH').textContent=place==='gym'?'Gym cardio: machine settings':'Cardio at home or outdoors';
-$('cardio').innerHTML=wo.P.map(card).join('')+(place==='gym'?`<div class="card"><h3>Can't reach the gym?</h3><ul><li>A brisk walk of <b>${eqWalk} min</b> at 5.5 km/h burns about the same as one ${wo.P[0].n.toLowerCase()} session</li><li>Keep your <b>${wo.steps.toLocaleString('en-IN')} steps</b> a day either way</li><li>Calories are for your weight (${c.w} kg), from ACSM equations; machine displays often read 10–20% high</li></ul></div>`:`<div class="card"><h3>Daily walking</h3><ul><li>Aim for <b>${wo.steps.toLocaleString('en-IN')} steps</b> a day in total</li><li>A 10-minute walk after each meal helps blood sugar</li><li>Calories are for your weight (${c.w} kg), from ACSM walking and running equations</li></ul></div>`);
+$('cardioH').textContent=place==='gym'?t('cardioGym'):t('cardioHome');
+$('cardio').innerHTML=wo.P.map(card).join('')+(place==='gym'?`<div class="card"><h3>${t('noGym')}</h3><ul><li>${t('noGymWalk',eqWalk,wo.P[0].n.toLowerCase())}</li><li>${t('keepSteps',wo.steps.toLocaleString('en-IN'))}</li><li>${t('calNote',Wt(c.w))}</li></ul></div>`:`<div class="card"><h3>${t('dailyWalk')}</h3><ul><li>${t('aimSteps',wo.steps.toLocaleString('en-IN'))}</li><li>${t('mealWalk')}</li><li>${t('calNoteH',Wt(c.w))}</li></ul></div>`);
 const uniq=[...new Set(split)];
-$('sess').innerHTML=uniq.map(n=>`<div class="card"><h3>${n} <span class="note">· ${wo.sMin} min · ~${fmt(wo.lift+(wo.fin?wo.finS.g:0))} kcal</span></h3><p class="note" style="margin-top:6px">Warm-up: 5 min ${place==='gym'?'cross trainer, level 3':'brisk march and arm circles'}, then 1 light set of the first exercise</p><ol>${EX[place][n].map(e=>{const[a,b]=e.split('|');return `<li>${a} <span>${b}</span></li>`}).join('')}${wo.fin?`<li>Finisher: ${wo.finP.n.toLowerCase()} <span>${wo.fin} min · ${wo.finP.main}</span></li>`:''}</ol></div>`).join('')+`<div class="card"><h3>How to progress</h3><ul><li>Rest 60–90 s between sets (2 min on heavy lifts)</li><li>When you hit the top of the rep range on all sets, add 2.5 kg or a harder variation</li><li>Warm up 5 min first; stop 1–2 reps before failure</li><li>Sleep 7–8 hours: fat loss and muscle gain both stall without it</li></ul></div>`;
+$('sess').innerHTML=uniq.map(n=>`<div class="card"><h3>${n} <span class="note">· ${wo.sMin} min · ~${fmt(wo.lift+(wo.fin?wo.finS.g:0))} kcal</span></h3><p class="note" style="margin-top:6px">${place==='gym'?t('warmupG'):t('warmupH')}</p><ol>${EX[exPlace][n].map(e=>{const[a,b]=adapt(...e.split('|'));return `<li>${a} <span>${b}</span></li>`}).join('')}${wo.fin?`<li>${t('finisher')}: ${wo.finP.n.toLowerCase()} <span>${wo.fin} min · ${wo.finP.main}</span></li>`:''}</ol></div>`).join('')+`<div class="card"><h3>${t('progT')}</h3><ul>${t('prog').map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
 
 /* diet */
-const p=plan(c);
-$('dietSub').textContent=`Built for ${fmt(c.kcal)} kcal and ${c.protein} g protein a day. Portions are scaled to hit your numbers; swap foods within a meal freely as long as the protein source stays.`;
-$('macros').innerHTML=[[fmt(c.kcal)+' kcal','Calories per day'],[c.protein+' g','Protein · '+(c.protein/c.w).toFixed(1)+' g per kg'],[c.carb+' g','Carbohydrates'],[c.fatG+' g','Fat'],['3–4 L','Water']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
-$('meals').innerHTML=p.meals.map(([n,items])=>{const k=items.reduce((t,x)=>t+F[x.k][2]*per(x.k,x.q),0),pr=items.reduce((t,x)=>t+F[x.k][3]*per(x.k,x.q),0);
-return `<div class="card meal"><h3>${n}<small>${fmt(k)} kcal · ${Math.round(pr)} g protein</small></h3><table>${items.map(x=>`<tr><td>${F[x.k][0]}</td><td>${qty(x.k,x.q)}</td></tr>`).join('')}</table></div>`}).join('');
-const gap=(a,t,u)=>{const d=a-t,ok=Math.abs(d)<=t*.08;return `<td class="${ok?'ok':'lo'}">${d>0?'+':''}${fmt(d)}${u}</td>`};
+const p=plan(c,false);p.meals=pattern(p.meals);
+const ML=t('meals');
+$('dietSub').textContent=t('dietSub',fmt(c.kcal),c.protein);
+$('macros').innerHTML=[[fmt(c.kcal)+' kcal',t('mCal')],[c.protein+' g',t('mPro',(c.protein/c.w).toFixed(1))],[c.carb+' g',t('mCarb')],[c.fatG+' g',t('mFat')],['3–4 L',t('mWater')]].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+const mealCard=([n,items],swap=true)=>{const k=items.reduce((s,x)=>s+F[x.k][2]*per(x.k,x.q),0),pr=items.reduce((s,x)=>s+F[x.k][3]*per(x.k,x.q),0);
+return `<div class="card meal"><h3>${ML[n]||n}<small>${fmt(k)} kcal · ${Math.round(pr)} g ${t('protein').toLowerCase()}</small></h3><table>${items.map(x=>{const grp=x.r==='p'?PG:x.r==='c'?CG:null;const canSwap=swap&&grp&&grp.filter(allowed).length>1;return `<tr><td>${fname(x.k)}</td><td class="q">${qty(x.k,x.q)}</td><td class="s">${canSwap?`<button type="button" class="swap" title="swap" data-swap="${x.o}" data-cur="${x.k}" data-role="${x.r}">⇄</button>`:''}</td></tr>`}).join('')}</table></div>`};
+$('meals').innerHTML=p.meals.map(m=>mealCard(m)).join('');
+/* vrat */
+if(S.fast==='vrat'){const vp=plan(c,true);$('vratPlan').innerHTML=`<h3 style="font-size:22px;margin-top:26px">${t('vratT')}</h3><p class="note">${t('vratSub')} · ${fmt(vp.k)} kcal · ${Math.round(vp.p)} g</p><div class="meals">${vp.meals.map(m=>mealCard(m,false)).join('')}</div>`}else $('vratPlan').innerHTML='';
+const gap=(a,tg,u)=>{const d=a-tg,ok=Math.abs(d)<=tg*.08;return `<td class="${ok?'ok':'lo'}">${d>0?'+':''}${fmt(d)}${u}</td>`};
 const items={};p.meals.forEach(([,it])=>it.forEach(x=>{items[x.k]=(items[x.k]||0)+x.q}));
-const mq=(k,q)=>{const u=F[k][1],m=q*30;return u==='g'?(m>=1000?(m/1000).toFixed(1)+' kg':m+' g'):u==='ml'?(m>=1000?(m/1000).toFixed(1)+' L':m+' ml'):`${m} ${F[k][8][1]}`};
+const mq=(k,q)=>{const u=F[k][1],m=q*30;return u==='g'?(m>=1000?(m/1000).toFixed(1)+' kg':m+' g'):u==='ml'?(m>=1000?(m/1000).toFixed(1)+' L':m+' ml'):qty(k,m)};
 const shop=Object.entries(items).map(([k,q])=>({k,q,cost:F[k][6]*per(k,q)*30})).sort((a,b)=>b.cost-a.cost);
-$('totals').innerHTML=`<div class="card"><h3>Daily total vs your target</h3><table class="tt"><thead><tr><th>Per day</th><th>Target</th><th>This plan</th><th>Gap</th></tr></thead><tbody>
-<tr><td>Calories</td><td>${fmt(c.kcal)}</td><td>${fmt(p.k)}</td>${gap(p.k,c.kcal,'')}</tr>
-<tr><td>Protein</td><td>${c.protein} g</td><td>${Math.round(p.p)} g</td>${gap(p.p,c.protein,' g')}</tr>
-<tr><td>Carbohydrates</td><td>${c.carb} g</td><td>${Math.round(p.c)} g</td>${gap(p.c,c.carb,' g')}</tr>
-<tr><td>Fat</td><td>${c.fatG} g</td><td>${Math.round(p.f)} g</td>${gap(p.f,c.fatG,' g')}</tr>
-<tr class="sum"><td>Food cost</td><td>₹${fmt(p.cap)}/mo max</td><td>₹${fmt(p.cost)}/day</td><td>₹${fmt(p.cost*30)}/mo</td></tr></tbody></table><p class="note" style="margin-top:8px">Green: within 8% of target. Amber: further off; see the note below the cost bar.</p></div>
-<div class="card"><h3>Monthly shopping list</h3><table class="tt"><thead><tr><th>Food</th><th>Per day</th><th>Per month</th><th>Cost/month</th></tr></thead><tbody>${shop.map(x=>`<tr><td>${F[x.k][0]}</td><td>${qty(x.k,x.q)}</td><td>${mq(x.k,x.q)}</td><td>₹${fmt(x.cost)}</td></tr>`).join('')}<tr class="sum"><td>Total</td><td></td><td></td><td>₹${fmt(p.cost*30)}</td></tr></tbody></table></div>`;
-const band={low:'₹1k–3k plan: dal, soya, eggs, seasonal produce',mid:'₹3k–5k plan: adds paneer, chicken, fish',high:'₹5k–7k plan: adds whey, tofu, nuts'}[S.bud];
-$('cost').innerHTML=`<div><b>₹${fmt(p.cost)}</b> <span>per day</span></div><div><b>₹${fmt(p.cost*30)}</b> <span>per month (approx.)</span></div><div><span>${band} · totals ${fmt(p.k)} kcal, ${Math.round(p.p)} g protein</span></div>`;
-const short=c.protein-p.p,over=p.cost*30>p.cap;
-$('dietWarn').innerHTML=(over?`<p class="warn">Your calorie needs are high, so even the cheapest version of this plan costs about ₹${fmt(p.cost*30)} a month, a little above the ₹${fmt(p.cap)} limit. Picking the next budget range, or more dal and soya in place of milk and eggs, brings it closer.</p>`:'')+(short>12?`<p class="warn">This plan reaches ${Math.round(p.p)} g of your ${c.protein} g protein target without going over your calories. To close the gap, ${S.diet==='veg'?'add 20–30 g more soya chunks or a scoop of whey; both give a lot of protein for few calories':'add egg whites, or swap paneer and dal for chicken or fish'}.</p>`:'')+(Math.abs(p.k-c.kcal)>c.kcal*.08?`<p class="warn">Portions round to whole rotis and eggs, so this lands at ${fmt(p.k)} kcal against your ${fmt(c.kcal)} target. Drop or add one roti to adjust.</p>`:'');
-const more=S.diet==='veg'?['Dal, chana, rajma, soya at two meals a day','Paneer, tofu, curd, milk for protein','Sabzi and salad filling half the plate','Whole wheat, bajra, jowar rotis']:S.diet==='egg'?['2–4 eggs a day (boiled, bhurji, omelette)','Dal, chana and curd every day','Sabzi and salad filling half the plate','Whole grain rotis over maida']:['Chicken breast, fish, eggs (grilled, curry, tandoori)','Dal and curd every day','Sabzi and salad filling half the plate','Rice in measured portions, not unlimited'];
-const less=['Sugary chai: cut to 1 cup a day, less sugar','Fried snacks: samosa, farsan, bhajiya, namkeen','Sweets, cold drinks, packaged juice','Maida: bakery items, white bread, biscuits',c.goal==='gain'?'Skipping meals: eat every 3–4 hours':'Late-night eating after dinner'];
-$('eat').innerHTML=`<div class="card"><h3>Eat more of</h3><ul>${more.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="card"><h3>Cut down on</h3><ul>${less.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="card"><h3>Simple rules</h3><ul><li>Protein at every meal, about a palm-size portion</li><li>Weigh food for the first 2 weeks to learn portions</li><li>Weigh yourself 3 times a week in the morning; watch the weekly average</li><li>Re-run this tool every 4 weeks with your new weight</li></ul></div>`;
+$('totals').innerHTML=`<div class="card"><h3>${t('dayT')}</h3><table class="tt"><thead><tr><th>${t('perDayH')}</th><th>${t('target')}</th><th>${t('thisPlan')}</th><th>${t('gap')}</th></tr></thead><tbody>
+<tr><td>${t('kcal')}</td><td>${fmt(c.kcal)}</td><td>${fmt(p.k)}</td>${gap(p.k,c.kcal,'')}</tr>
+<tr><td>${t('protein')}</td><td>${c.protein} g</td><td>${Math.round(p.p)} g</td>${gap(p.p,c.protein,' g')}</tr>
+<tr><td>${t('carbs')}</td><td>${c.carb} g</td><td>${Math.round(p.c)} g</td>${gap(p.c,c.carb,' g')}</tr>
+<tr><td>${t('fat')}</td><td>${c.fatG} g</td><td>${Math.round(p.f)} g</td>${gap(p.f,c.fatG,' g')}</tr>
+<tr class="sum"><td>${t('foodCost')}</td><td>₹${fmt(p.cap)}${t('moMax')}</td><td>₹${fmt(p.cost)}/${S.lang==='hi'?'दिन':'day'}</td><td>₹${fmt(p.cost*30)}/${S.lang==='hi'?'माह':'mo'}</td></tr></tbody></table><p class="note" style="margin-top:8px">${t('greenNote')}</p></div>
+<div class="card"><h3>${t('shopT')}</h3><table class="tt"><thead><tr><th>${t('food')}</th><th>${t('perDayH')}</th><th>${t('perMonth')}</th><th>${t('costMonth')}</th></tr></thead><tbody>${shop.map(x=>`<tr><td>${fname(x.k)}</td><td>${qty(x.k,x.q)}</td><td>${mq(x.k,x.q)}</td><td>₹${fmt(x.cost)}</td></tr>`).join('')}<tr class="sum"><td>${t('total')}</td><td></td><td></td><td>₹${fmt(p.cost*30)}</td></tr></tbody></table></div>`;
+$('cost').innerHTML=`<div><b>₹${fmt(p.cost)}</b> <span>${t('perDayL')}</span></div><div><b>₹${fmt(p.cost*30)}</b> <span>${t('perMonthL')}</span></div><div><span>${t('band')[S.bud]} · ${t('totalsL',fmt(p.k),Math.round(p.p))}</span></div>`;
+const short=c.protein-p.p,over=p.cost*30>p.cap*1.0;
+const vegLike=S.diet==='veg'||S.restr==='jain';
+$('dietWarn').innerHTML=(over?`<p class="warn">${t('overB',fmt(p.cost*30),fmt(p.cap))}</p>`:'')+(short>12?`<p class="warn">${t('shortP',Math.round(p.p),c.protein,vegLike)}</p>`:'')+(Math.abs(p.k-c.kcal)>c.kcal*.08?`<p class="warn">${t('roundK',fmt(p.k),fmt(c.kcal))}</p>`:'')+(S.restr==='jain'?`<p class="warn">${t('jainNote')}</p>`:'')+(S.restr==='dairyfree'?`<p class="warn">${t('dairyNote')}</p>`:'')+(S.fast==='ramadan'?`<p class="warn">${t('ramNote')}</p>`:'');
+const more=vegLike?t('moreVeg'):S.diet==='egg'?t('moreEgg'):t('moreNon');
+const less=t('less').concat([c.goal==='gain'?t('lessGain'):t('lessLate')]);
+$('eat').innerHTML=`<div class="card"><h3>${t('eatMore')}</h3><ul>${more.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="card"><h3>${t('cutDown')}</h3><ul>${less.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="card"><h3>${t('rules')}</h3><ul>${t('rulesL').map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+
+/* labs */
+$('labs').innerHTML=`<div class="card"><h3>${t('labsT')}</h3><table class="tt"><tbody>${t('labs').map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</tbody></table><p class="note" style="margin-top:8px">${t('labsNote')}</p></div><div class="card"><h3>${t('suppT')}</h3><ul>${t('supp').filter((x,i)=>i!==2||!c.m).map(x=>`<li>${x}</li>`).join('')}</ul><p class="note" style="margin-top:8px">${t('suppNote')}</p></div>`;
+
+renderBrand(c);
+$('langEn').setAttribute('aria-pressed',S.lang==='en');$('langHi').setAttribute('aria-pressed',S.lang==='hi');
 save()}
 
-/* ---------- controls & storage ---------- */
-function seg(id,key){const el=$(id);const set=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S[key]));el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S[key]=b.dataset.v;set();render()});return set}
+/* =================== controls & storage =================== */
+function seg(id,key){const el=$(id);const set=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S[key]));el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const prev=S[key];S[key]=b.dataset.v;if(key==='units'&&prev!==S.units)convertUnits(prev);if(key==='diet'||key==='restr')S.swaps={};set();render()});return set}
+function convertUnits(from){
+const v=k=>parseFloat($(k).value);
+if(from==='metric'){const cm=v('ht')||170;const ft=Math.floor(cm/30.48);$('htFt').value=ft;$('htIn').value=Math.round((cm-ft*30.48)/2.54);if(v('wt'))$('wt').value=(v('wt')*2.20462).toFixed(1)}
+else{const cm=(v('htFt')||5)*30.48+(v('htIn')||0)*2.54;$('ht').value=Math.round(cm);if(v('wt'))$('wt').value=(v('wt')*.453592).toFixed(1)}}
 function save(){try{const o={...S};fields.forEach(k=>o[k]=$(k).value);localStorage.setItem('bodycheck',JSON.stringify(o))}catch(e){}}
-try{const o=JSON.parse(localStorage.getItem('bodycheck')||'null');if(o){['sex','place','diet','bud','pace'].forEach(k=>{if(o[k])S[k]=o[k]});fields.forEach(k=>{if(o[k]!=null&&o[k]!=='')$(k).value=o[k]});if(o.waist||o.neck)$('tape').open=true}}catch(e){}
-$('paceSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.pace=b.dataset.v;render()});
-const sets=[seg('sexSeg','sex'),seg('placeSeg','place'),seg('dietSeg','diet'),seg('budSeg','bud')];
+try{const o=JSON.parse(localStorage.getItem('bodycheck')||'null');if(o){['sex','place','diet','bud','pace','units','lang','cuisine','restr','pat','fast','kAdj','walkAdj','adjDate'].forEach(k=>{if(o[k]!==undefined&&o[k]!==null)S[k]=o[k]});if(Array.isArray(o.cond))S.cond=o.cond;if(o.swaps&&typeof o.swaps==='object')S.swaps=o.swaps;fields.forEach(k=>{if(o[k]!=null&&o[k]!=='')$(k).value=o[k]})}}catch(e){}
+try{LOG=JSON.parse(localStorage.getItem('bodycheck-log')||'[]').filter(e=>e&&e.d&&e.w>0);LOG.sort((a,b)=>a.d<b.d?-1:1)}catch(e){LOG=[]}
+try{const co=JSON.parse(localStorage.getItem('bodycheck-coach')||'null');if(co)COACH=co}catch(e){}
+try{const q=new URLSearchParams(location.search);if(q.get('coach'))URLCOACH={name:q.get('coach').slice(0,60),wa:(q.get('wa')||'').replace(/\D/g,'').slice(0,15),logo:(q.get('logo')||'').startsWith('https://')?q.get('logo'):''};if(q.get('lang')==='hi'&&!localStorage.getItem('bodycheck'))S.lang='hi'}catch(e){}
+$('cName').value=COACH.name||'';$('cWa').value=COACH.wa||'';$('cLogo').value=COACH.logo&&!COACH.logo.startsWith('data:')?COACH.logo:'';
+$('paceSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;S.pace=b.dataset.v;render()});
+const sets=[seg('sexSeg','sex'),seg('placeSeg','place'),seg('dietSeg','diet'),seg('budSeg','bud'),seg('unitSeg','units'),seg('cuisSeg','cuisine'),seg('restrSeg','restr'),seg('patSeg','pat'),seg('fastSeg','fast')];
 sets.forEach(f=>f());
-$('f').addEventListener('input',render);
+$('f').addEventListener('input',e=>{if(e.target.dataset.cond){const k=e.target.dataset.cond;S.cond=e.target.checked?[...new Set([...S.cond,k])]:S.cond.filter(x=>x!==k)}render()});
 $('f').addEventListener('submit',e=>e.preventDefault());
-new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+$('langEn').addEventListener('click',()=>{S.lang='en';render()});
+$('langHi').addEventListener('click',()=>{S.lang='hi';render()});
+$('printBtn').addEventListener('click',()=>window.print());$('printBtn2').addEventListener('click',()=>window.print());
+$('copyLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(shareURL());$('copyLink').textContent=t('copied');setTimeout(()=>$('copyLink').textContent=t('copyLink'),2000)}catch(e){prompt('',shareURL())}});
+$('meals').addEventListener('click',e=>{const b=e.target.closest('[data-swap]');if(!b)return;const grp=(b.dataset.role==='p'?PG:CG).filter(allowed);const i=grp.indexOf(b.dataset.cur);const next=grp[(i+1)%grp.length];if(next===b.dataset.swap)delete S.swaps[b.dataset.swap];else S.swaps[b.dataset.swap]=next;render()});
+$('resetSwaps').addEventListener('click',()=>{S.swaps={};render()});
+$('logAdd').addEventListener('click',()=>{const d=$('logDate').value||today(),raw=parseFloat($('logW').value);if(!(raw>0))return;const w=imp()?raw*.453592:raw;const waist=parseFloat($('logWaist').value)||null;LOG=LOG.filter(e=>e.d!==d).concat([{d,w:+w.toFixed(2),waist}]).sort((a,b)=>a.d<b.d?-1:1);saveLog();$('logW').value='';$('logWaist').value='';render()});
+$('progressSec').addEventListener('click',e=>{const del=e.target.closest('[data-del]');if(del){LOG.splice(+del.dataset.del,1);saveLog();render();return}
+if(e.target.id==='applyAdj'){S.kAdj+=+e.target.dataset.v;S.walkAdj=(S.walkAdj||0)+(+e.target.dataset.w||0);S.adjDate=LOG[LOG.length-1].d;render();return}
+if(e.target.id==='resetAdj'){S.kAdj=0;S.walkAdj=0;S.adjDate='';render();return}
+if(e.target.id==='useLatest'){const w=LOG[LOG.length-1].w;$('wt').value=imp()?(w*2.20462).toFixed(1):w.toFixed(1);render()}});
+const saveCoach=()=>{COACH={name:$('cName').value.trim().slice(0,60),wa:$('cWa').value.replace(/\D/g,'').slice(0,15),logo:$('cLogo').value.trim()||(COACH.logo&&COACH.logo.startsWith('data:')?COACH.logo:'')};try{localStorage.setItem('bodycheck-coach',JSON.stringify(COACH))}catch(e){}URLCOACH=false;render()};
+['cName','cWa','cLogo'].forEach(id=>$(id).addEventListener('change',saveCoach));
+$('cLogoFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{const cv=document.createElement('canvas');cv.width=cv.height=128;const s=Math.min(img.width,img.height);cv.getContext('2d').drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,128,128);$('cLogo').value='';COACH.logo=cv.toDataURL('image/png');saveCoach()};img.src=URL.createObjectURL(f)});
+$('makeLink').addEventListener('click',()=>{saveCoach();const u=shareURL();$('coachOut').textContent=u;try{navigator.clipboard.writeText(u)}catch(e){}});
+$('clearCoach').addEventListener('click',()=>{COACH={name:'',wa:'',logo:''};URLCOACH=false;['cName','cWa','cLogo'].forEach(id=>$(id).value='');try{localStorage.removeItem('bodycheck-coach')}catch(e){}$('coachOut').textContent='';render()});
+new MutationObserver(()=>render()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 render();
 }
 </script>
